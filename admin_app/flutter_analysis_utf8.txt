@@ -1,0 +1,9 @@
+﻿Analyzing admin_app...                                          
+
+   info - Angle brackets will be interpreted as HTML - lib\auth\jwt_utils.dart:23:18 - unintended_html_in_doc_comment
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\compliance_audit_logs_page.dart:129:27 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\pages\login_page.dart:45:20 - curly_braces_in_flow_control_structures
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\widgets\dynamic_form_widget.dart:111:13 - deprecated_member_use
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\widgets\dynamic_form_widget.dart:132:21 - deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\widgets\dynamic_form_widget.dart:133:21 - deprecated_member_use
+

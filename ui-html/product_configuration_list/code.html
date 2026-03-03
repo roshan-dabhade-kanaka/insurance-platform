@@ -1,0 +1,258 @@
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Configuration List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- Header / Navigation -->
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 pt-4 pb-2">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">shield_with_heart</span>
+<h1 class="text-xl font-extrabold tracking-tight">InsureAdmin</h1>
+</div>
+<button class="bg-primary text-white p-2 rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 mb-4">
+<span>Config</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary font-semibold">Insurance Products</span>
+</div>
+<!-- Main Tabs -->
+<div class="flex border-b border-slate-100 dark:border-slate-800">
+<a class="flex-1 text-center pb-3 border-b-2 border-primary text-primary font-bold text-sm" href="#">Products</a>
+<a class="flex-1 text-center pb-3 border-b-2 border-transparent text-slate-500 font-medium text-sm" href="#">Underwriting</a>
+<a class="flex-1 text-center pb-3 border-b-2 border-transparent text-slate-500 font-medium text-sm" href="#">Risk Models</a>
+</div>
+</header>
+<!-- Search & Filter Bar -->
+<div class="px-4 py-3 bg-white dark:bg-slate-900 flex gap-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search product name..." type="text"/>
+</div>
+<button class="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+<!-- Filter Pills -->
+<div class="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar bg-white dark:bg-slate-900">
+<span class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Active (12)</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Drafts (4)</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Archived (8)</span>
+</div>
+<!-- Product List Table/Cards -->
+<main class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Product Item 1: Health -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Premium Family Health</h3>
+<p class="text-xs text-slate-500">Global Coverage • ID: H-902</p>
+</div>
+</div>
+<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2 border-y border-slate-50 dark:border-slate-800">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Risk Model</p>
+<p class="text-xs font-medium">Actuarial v4.2</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Regions</p>
+<p class="text-xs font-medium">EU, NA, APAC</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-1">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img class="size-full object-cover" data-alt="Female professional avatar headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2V9qfcN2Xmq09yOp4kjI87_pUbpFXX_YX8BPS99Yemce71LUck2RqbRNBXMo_iHTsdH5wyoouc1wlxzxjpLoBA59lfLN4XEXNNE6vq9T08ssaHFdqrXXQ76fenXZVyhL-DcvABVn0TScWVhZkBIEd_dgSBK_nVH98xgNG4KGD4HgdZC2s_nyQb-Sc-gnxHJYjCEq6siXCf2hDGv_GyhFEBtL_bv2MGuMn66SO7VBOgYCVCWIw3wFP8CwxZdtjG7CIOjDLOlceyw"/>
+</div>
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img class="size-full object-cover" data-alt="Male professional avatar headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYwtabX0R5XyADue-oiQC8eia-VtbNOqpqY8CVjRmC3QfkDGehKvY_nQpLIqK_zv9n1uKg-9Iz4IsygIc-LjJkOWLVvJLEDQZ45AEZrpnCOd5rX33Lu9GWces7lmyHebpbDLIORYOeZ-zSYqMDX6hBM0_OLNsKUjp5gWkI_40ITVhCqvR3QnT_RlpZe63XB_JNXAkjIj9ykvde03rPdUCebdDmuDf_GP2K6Sk5yP6-Fky8VOm3r4wRkkgvcKq2galH97KtQGXYyA"/>
+</div>
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary">
+                            +2
+                        </div>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                        Configure <span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+<!-- Product Item 2: Auto -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Smart Auto Plus</h3>
+<p class="text-xs text-slate-500">Telematics Based • ID: A-415</p>
+</div>
+</div>
+<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2 border-y border-slate-50 dark:border-slate-800">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Risk Model</p>
+<p class="text-xs font-medium">DriveScore AI</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Regions</p>
+<p class="text-xs font-medium">Germany, UK</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-1">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img class="size-full object-cover" data-alt="Technical professional avatar headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrx7aCHohpOi1Kull3MXiCRanhCP12HrI76YU0FPKuKHK0SCG8Srv8QBLudecWVUmc4C0k6AztWWBAScDsUnFtMMmEsRznZ7dYyJ3Q7A7vL96331FXFcV-nSTXtgGiAFsGmS6Z8VM1XHb1xJEKdQjmnJzSafPONkDKW3Dl-E3fnssJmC6HR9tt3HOyFK26ol26vxngK0Yh5rQMD5tryAqXmwl_0ixPQSTTYWxvCbcONWhVOPqPUDbZ_wffz8Bd3jypWf4uTPELpA"/>
+</div>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                        Configure <span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+<!-- Product Item 3: Life -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3 opacity-80">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined">family_restroom</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Secure Life 360</h3>
+<p class="text-xs text-slate-500">Term Life • ID: L-088</p>
+</div>
+</div>
+<span class="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Draft</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2 border-y border-slate-50 dark:border-slate-800">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Risk Model</p>
+<p class="text-xs font-medium italic">Pending Selection</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Regions</p>
+<p class="text-xs font-medium">NA Only</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-1">
+<div class="flex -space-x-2 invisible">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden"></div>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                        Finish Draft <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Product Item 4: Cyber -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined">security_update_good</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Enterprise Cyber</h3>
+<p class="text-xs text-slate-500">Commercial • ID: C-221</p>
+</div>
+</div>
+<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2 border-y border-slate-50 dark:border-slate-800">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Risk Model</p>
+<p class="text-xs font-medium">CyberSec v2.1</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold">Regions</p>
+<p class="text-xs font-medium">Global</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-1">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img class="size-full object-cover" data-alt="Executive female avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5_li2zPmuWFuWazI3JKAdzd4zKp73SaSEotyvoFE9jPnj90W0js6TDJkQa5_R9WbtMul4n9IRVLQLQkgb4dXpBaCe3jtQTq1LaCEvj67bU6LSz9ucfjNPCmNix1cKTOJfbBgTwJyh2dEjzZuUpvkTxoPNeqoNBO1bWPzG-DNqD0SMIjacRTpk-AbZWOBs2BDYMgwjSSFKP4lH2IqmpMHUEzKlXcU8MMk7qWOd0kU4KPE2C9bOKP_mv9Bla6JZH-VG3LLRAijh4A"/>
+</div>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                        Configure <span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Tab Bar -->
+<nav class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-6 pt-2 px-4 flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="text-[10px] font-bold">Products</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold">Risks</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold">Teams</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Admin</span>
+</a>
+</nav>
+<!-- Create New FAB Hint (Small) -->
+<div class="absolute bottom-24 right-6 pointer-events-none opacity-50">
+<div class="text-[10px] font-bold text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm border border-slate-100 dark:border-slate-700">Add New</div>
+</div>
+</div>
+</body></html>

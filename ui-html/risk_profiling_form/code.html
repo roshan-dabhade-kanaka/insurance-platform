@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Risk Profiling Form</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative mx-auto max-w-[430px] min-h-screen bg-white dark:bg-slate-950 flex flex-col shadow-2xl overflow-hidden">
+<header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between">
+<button class="text-slate-900 dark:text-slate-100 p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Risk Profiling</h2>
+<div class="flex items-center justify-end">
+<button class="p-1 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+<div class="flex w-full flex-row items-center justify-center gap-3 py-4">
+<div class="h-1.5 w-8 rounded-full bg-primary"></div>
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<div class="px-5 pt-6">
+<h3 class="text-slate-900 dark:text-slate-100 tracking-tight text-2xl font-extrabold leading-tight">Personal Information</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1 leading-relaxed">Please provide accurate details to ensure correct policy pricing and coverage underwriting.</p>
+</div>
+<div class="px-5 mt-8 space-y-6">
+<div class="space-y-2">
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Full Name</label>
+<div class="relative">
+<input class="w-full h-12 px-4 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" placeholder="Johnathan Doe" type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 text-sm">info</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Date of Birth</label>
+<input class="w-full h-12 px-4 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" type="date"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Gender</label>
+<select class="w-full h-12 px-4 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none">
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Occupation Risk Category</label>
+<div class="flex flex-col gap-3">
+<label class="flex items-center p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer">
+<input checked="" class="text-primary focus:ring-primary h-5 w-5" name="occ" type="radio"/>
+<div class="ml-3">
+<span class="block text-sm font-bold">Standard Office</span>
+<span class="text-xs text-slate-500">Low risk, administrative environment</span>
+</div>
+</label>
+<label class="flex items-center p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer">
+<input class="text-primary focus:ring-primary h-5 w-5" name="occ" type="radio"/>
+<div class="ml-3">
+<span class="block text-sm font-bold">Skilled Manual</span>
+<span class="text-xs text-slate-500">Moderate risk, light equipment</span>
+</div>
+</label>
+<label class="flex items-center p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer">
+<input class="text-primary focus:ring-primary h-5 w-5" name="occ" type="radio"/>
+<div class="ml-3">
+<span class="block text-sm font-bold">High Risk Field</span>
+<span class="text-xs text-slate-500">Hazardous zones, heavy machinery</span>
+</div>
+</label>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 flex gap-3">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-500">lightbulb</span>
+<p class="text-xs text-amber-800 dark:text-amber-400 font-medium">Underwriting tip: Ensure you select the occupation that reflects your primary daily activities to avoid claim rejection.</p>
+</div>
+<div class="space-y-4 pt-4 pb-8">
+<button class="w-full bg-primary text-white font-bold h-14 rounded-xl shadow-lg shadow-primary/25 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                        Next Step
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="w-full bg-transparent text-slate-600 dark:text-slate-400 font-bold h-12 rounded-xl active:scale-95 transition-transform">
+                        Save Draft &amp; Exit
+                    </button>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 mx-auto max-w-[430px] bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 flex justify-between items-center z-40">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">description</span>
+<span class="text-[10px] font-bold">Policies</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">shield_with_heart</span>
+<span class="text-[10px] font-bold">Claims</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</a>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finance Payout Approval</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col pb-32">
+<!-- Status Bar Spacer (iOS) -->
+<div class="h-11 w-full bg-white dark:bg-slate-900"></div>
+<!-- Header -->
+<header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 ios-blur border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center px-4 py-3 justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">account_balance_wallet</span>
+<h1 class="text-lg font-bold tracking-tight">Payout Approval</h1>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Summary Cards -->
+<div class="px-4 py-5 flex gap-4 overflow-x-auto no-scrollbar">
+<div class="min-w-[160px] flex-1 bg-primary p-4 rounded-xl shadow-sm">
+<p class="text-white/80 text-xs font-medium uppercase tracking-wider">Pending Total</p>
+<h3 class="text-white text-2xl font-extrabold mt-1">$142,850</h3>
+<p class="text-white/60 text-[10px] mt-2">24 Payouts Ready</p>
+</div>
+<div class="min-w-[160px] flex-1 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Approved Today</p>
+<h3 class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold mt-1">$68,200</h3>
+<p class="text-primary text-[10px] mt-2 font-bold">12 Batches Sync'd</p>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="px-4 pb-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" type="checkbox"/>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select All</span>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+                    Export ERP
+                </button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="px-4 mb-2">
+<div class="flex border-b border-slate-200 dark:border-slate-800">
+<button class="px-4 py-2 text-sm font-bold border-b-2 border-primary text-primary">Priority (8)</button>
+<button class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400">Regular (16)</button>
+<button class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400">Batches</button>
+</div>
+</div>
+<!-- Payout List -->
+<div class="flex flex-col gap-0.5">
+<!-- Payout Item 1 -->
+<div class="bg-white dark:bg-slate-900 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-4">
+<div class="mt-1">
+<input checked="" class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Jonathan Harker</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Claim #CL-99210 • <a class="text-primary font-semibold" href="#">View Details</a></p>
+</div>
+<span class="text-lg font-extrabold text-slate-900 dark:text-slate-100">$12,450.00</span>
+</div>
+<div class="mt-3 flex items-center gap-2 p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-400 text-sm">account_balance</span>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">JP MORGAN CHASE</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Checking • **** 8821</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payout Item 2 -->
+<div class="bg-white dark:bg-slate-900 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-4">
+<div class="mt-1">
+<input class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Mina Murray</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Claim #CL-98442 • <a class="text-primary font-semibold" href="#">View Details</a></p>
+</div>
+<span class="text-lg font-extrabold text-slate-900 dark:text-slate-100">$4,200.00</span>
+</div>
+<div class="mt-3 flex items-center gap-2 p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-400 text-sm">account_balance</span>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">WELLS FARGO</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Savings • **** 1209</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payout Item 3 -->
+<div class="bg-white dark:bg-slate-900 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-4">
+<div class="mt-1">
+<input checked="" class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Arthur Holmwood</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Claim #CL-97001 • <a class="text-primary font-semibold" href="#">View Details</a></p>
+</div>
+<span class="text-lg font-extrabold text-slate-900 dark:text-slate-100">$28,900.00</span>
+</div>
+<div class="mt-3 flex items-center gap-2 p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-400 text-sm">account_balance</span>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">CITIBANK</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Business • **** 0045</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payout Item 4 -->
+<div class="bg-white dark:bg-slate-900 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-4">
+<div class="mt-1">
+<input class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Quincey Morris</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Claim #CL-96558 • <a class="text-primary font-semibold" href="#">View Details</a></p>
+</div>
+<span class="text-lg font-extrabold text-slate-900 dark:text-slate-100">$875.50</span>
+</div>
+<div class="mt-3 flex items-center gap-2 p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-400 text-sm">account_balance</span>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">BANK OF AMERICA</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Checking • **** 4432</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Floating Action Button (Batch Approve) -->
+<div class="fixed bottom-24 left-0 right-0 px-4 z-40">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-xl flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">verified</span>
+                Approve Selected (2)
+            </button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pb-8 pt-2 ios-blur z-50">
+<div class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[10px] font-medium">Claims</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">payments</span>
+<span class="text-[10px] font-bold">Payouts</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

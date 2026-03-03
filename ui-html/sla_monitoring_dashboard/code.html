@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SLA Monitoring Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-3 justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined block">analytics</span>
+</div>
+<h1 class="text-xl font-extrabold tracking-tight">SLA Insights</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="relative p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-background-dark"></span>
+</button>
+</div>
+</header>
+<!-- Navigation Tabs -->
+<nav class="bg-white dark:bg-background-dark px-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-6 overflow-x-auto no-scrollbar">
+<a class="flex flex-col items-center border-b-2 border-primary py-3" href="#">
+<span class="text-sm font-bold text-primary whitespace-nowrap">Real-time</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent py-3 text-slate-500" href="#">
+<span class="text-sm font-bold whitespace-nowrap">Breaches</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent py-3 text-slate-500" href="#">
+<span class="text-sm font-bold whitespace-nowrap">Workflows</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent py-3 text-slate-500" href="#">
+<span class="text-sm font-bold whitespace-nowrap">Reports</span>
+</a>
+</div>
+</nav>
+<main class="flex-1 pb-24">
+<!-- Key Metrics -->
+<section class="p-4 grid grid-cols-1 gap-4">
+<div class="flex flex-col gap-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Primary KPIs</h2>
+<p class="text-sm text-slate-500">Performance vs 24h average</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-xl">timer</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">-12%</span>
+</div>
+<p class="text-slate-500 text-xs font-semibold">Time to Quote</p>
+<p class="text-2xl font-black">1.2h</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-amber-500 text-xl">pending_actions</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">+5%</span>
+</div>
+<p class="text-slate-500 text-xs font-semibold">Underwriting</p>
+<p class="text-2xl font-black">4.5h</p>
+</div>
+<div class="col-span-2 flex items-center justify-between rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex flex-col gap-1">
+<p class="text-slate-500 text-xs font-semibold">Claim Payout Speed</p>
+<p class="text-2xl font-black">2.1 days</p>
+</div>
+<div class="h-12 w-24 bg-primary/5 rounded-lg flex items-center justify-center overflow-hidden">
+<!-- Mini Sparkline Placeholder -->
+<div class="w-full h-full bg-gradient-to-r from-primary/10 via-primary/40 to-primary/10"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- SLA Breaches Section -->
+<section class="px-4 py-2">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-lg font-bold tracking-tight">Active SLA Breaches</h2>
+<span class="text-xs font-bold px-2 py-1 rounded bg-red-500 text-white">4 Critical</span>
+</div>
+<div class="space-y-3">
+<!-- Breach Card 1 -->
+<div class="p-4 bg-white dark:bg-slate-900 rounded-xl border-l-4 border-l-red-500 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-sm">Policy Renewal #PR-9082</h3>
+<p class="text-xs text-slate-500">Commercial Auto • High Priority</p>
+</div>
+<span class="text-[10px] font-bold text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded">OVERDUE 3h</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-red-500 h-full w-[100%]"></div>
+</div>
+<div class="flex justify-between items-center mt-3">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="User avatar profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9wr3QjiFHM_ccufR815YI_S2i14NrON9WQ1-XWh9YrdaPcWTcZL93176BwZSiXdBe85_X5C7AlTm-6NAma373hn0qpBmM1VIjeAvdnLHyBT8Cxh0OLg6h0lOqM93q6jFzTQNC0DEJJMH8tcxUqpphnnPgHIByLwSUZoACC1CwRZzSueWjKQv2wldZrFIIOMgDgXPZMJxfhwiYEYlG2mgkCw2sxBfZWzYaLyfzbzmXl0FmEyQBeeqVWmXisvRwDDhE8-Vf767nqA"/>
+</div>
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-300 flex items-center justify-center text-[10px] font-bold">
+                                    +2
+                                </div>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                                Escalate <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Breach Card 2 -->
+<div class="p-4 bg-white dark:bg-slate-900 rounded-xl border-l-4 border-l-amber-500 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-sm">Claim #CL-2241</h3>
+<p class="text-xs text-slate-500">Residential Fire • Adjuster Review</p>
+</div>
+<span class="text-[10px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">AT RISK 15m</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-amber-500 h-full w-[92%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Heatmap / Bottlenecks -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">hub</span>
+<h2 class="text-lg font-bold tracking-tight">Process Bottlenecks</h2>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-xs font-bold text-slate-400 mb-4 uppercase">Node Load Distribution</p>
+<div class="heatmap-grid mb-6">
+<div class="aspect-square bg-primary/10 rounded-md"></div>
+<div class="aspect-square bg-primary/20 rounded-md"></div>
+<div class="aspect-square bg-primary/40 rounded-md"></div>
+<div class="aspect-square bg-red-400 rounded-md"></div>
+<div class="aspect-square bg-red-600 rounded-md"></div>
+<div class="aspect-square bg-primary/20 rounded-md"></div>
+<div class="aspect-square bg-primary/10 rounded-md"></div>
+<div class="aspect-square bg-primary/60 rounded-md"></div>
+<div class="aspect-square bg-red-500 rounded-md"></div>
+<div class="aspect-square bg-primary/30 rounded-md"></div>
+<div class="aspect-square bg-primary/5 rounded-md"></div>
+<div class="aspect-square bg-primary/5 rounded-md"></div>
+<div class="aspect-square bg-primary/20 rounded-md"></div>
+<div class="aspect-square bg-primary/10 rounded-md"></div>
+<div class="aspect-square bg-primary/5 rounded-md"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-red-500"></div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<p class="text-xs font-bold">Document Verification</p>
+<p class="text-xs text-slate-500 font-mono">84% Load</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1 rounded-full">
+<div class="bg-red-500 h-full w-[84%]"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary"></div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<p class="text-xs font-bold">Underwriter Queue</p>
+<p class="text-xs text-slate-500 font-mono">42% Load</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1 rounded-full">
+<div class="bg-primary h-full w-[42%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-4 pb-6 pt-2">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Monitor</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span class="text-[10px] font-bold">Policies</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[10px] font-bold">Claims</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-[10px] font-bold">Workflow</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

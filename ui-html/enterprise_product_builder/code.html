@@ -1,0 +1,181 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- Header -->
+<div class="flex items-center bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 p-4 justify-between shrink-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back_ios</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">Product Builder</h2>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">more_horiz</span>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-colors">
+                    Save
+                </button>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="bg-slate-50 dark:bg-slate-900/50 shrink-0">
+<div class="flex border-b border-slate-200 dark:border-slate-800 px-4 gap-8">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4" href="#">
+<p class="text-sm font-bold">Design</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4" href="#">
+<p class="text-sm font-bold">JSON Preview</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4" href="#">
+<p class="text-sm font-bold">Rules</p>
+</a>
+</div>
+</div>
+<!-- Main Content Area (Scrollable) -->
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Technical Configuration Section -->
+<section class="p-4 bg-white dark:bg-slate-900/30 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">settings_input_component</span>
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-wider">Technical Configuration</h3>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wide">Product ID</label>
+<input class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/50 focus:border-primary px-4 py-2.5 text-sm" type="text" value="INS-AUTO-2024-X1"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wide">Class of Business</label>
+<select class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/50 focus:border-primary px-4 py-2.5 text-sm appearance-none">
+<option>Personal Auto</option>
+<option>Commercial</option>
+<option>Homeowners</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wide">Status</label>
+<div class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+<div class="size-2 rounded-full bg-emerald-500"></div>
+<span class="text-emerald-600 dark:text-emerald-400 text-sm font-bold">Drafting</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Canvas -->
+<section class="p-4 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">layers</span>
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-wider">Product Structure</h3>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Add Group
+                    </button>
+</div>
+<!-- Drag & Drop Canvas Item 1 -->
+<div class="relative border-l-2 border-primary bg-white dark:bg-slate-800/50 p-4 rounded-r-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div>
+<p class="text-xs font-bold text-primary mb-0.5">COVERAGE GROUP</p>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold">Liability &amp; Medical</h4>
+</div>
+<span class="material-symbols-outlined text-slate-400">drag_indicator</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-xl">account_balance_wallet</span>
+<span class="text-sm font-medium">Bodily Injury</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">edit</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-xl">emergency_home</span>
+<span class="text-sm font-medium">Property Damage</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">edit</span>
+</div>
+</div>
+</div>
+<!-- Drag & Drop Canvas Item 2 -->
+<div class="relative border-l-2 border-slate-400 bg-white dark:bg-slate-800/50 p-4 rounded-r-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div>
+<p class="text-xs font-bold text-slate-500 mb-0.5">POLICY TERMS</p>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold">Duration &amp; Renewals</h4>
+</div>
+<span class="material-symbols-outlined text-slate-400">drag_indicator</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Mandatory</span>
+<span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Standard</span>
+</div>
+</div>
+<!-- Empty State / Placeholder for Drop -->
+<div class="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 flex flex-col items-center justify-center gap-2 opacity-50">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+<p class="text-sm font-medium">Drag component here</p>
+</div>
+</section>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">architecture</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-tight">Builder</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">shield_with_heart</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-tight">Governance</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">history</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-tight">History</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-tight">Settings</p>
+</a>
+</div>
+</div>
+
+```</body></html>

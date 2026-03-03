@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Compliance Audit Logs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="sticky top-0 z-10 flex flex-col bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</div>
+<h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Compliance Audit</h1>
+<div class="flex size-10 items-center justify-end">
+<button class="flex items-center justify-center p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">search</span>
+</button>
+</div>
+</div>
+<div class="flex gap-3 p-4 overflow-x-auto no-scrollbar pt-0">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-200 dark:bg-slate-800 px-3 border border-transparent hover:border-primary/50">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Event Type</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-200 dark:bg-slate-800 px-3 border border-transparent hover:border-primary/50">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">User Role</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-200 dark:bg-slate-800 px-3 border border-transparent hover:border-primary/50">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">IP Address</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<div class="p-4">
+<div class="flex flex-col gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Date Range</p>
+<p class="text-slate-900 dark:text-slate-100 text-base font-semibold">Oct 01, 2023 - Oct 31, 2023</p>
+</div>
+<button class="flex h-9 items-center justify-center rounded-lg px-4 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90">
+                            Change
+                        </button>
+</div>
+</div>
+</div>
+<div class="px-4 py-2 flex items-center justify-between">
+<h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Audit Entries</h3>
+<span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full border border-primary/20">1,248 Total</span>
+</div>
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="flex size-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+<span class="material-symbols-outlined text-base">check_circle</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold">Policy Approved</span>
+</div>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">10:42 AM</span>
+</div>
+<div class="ml-10 grid grid-cols-2 gap-y-2">
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Underwriter</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Sarah Jenkins</p>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">IP Address</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">192.168.1.45</p>
+</div>
+<div class="col-span-2">
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Resource ID</p>
+<p class="text-primary text-sm font-mono font-medium">POL-98234-AX</p>
+</div>
+</div>
+</div>
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="flex size-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+<span class="material-symbols-outlined text-base">edit_document</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold">Rule Modified</span>
+</div>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">09:15 AM</span>
+</div>
+<div class="ml-10 grid grid-cols-2 gap-y-2">
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Compliance Officer</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Robert Chen</p>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">IP Address</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">10.0.4.122</p>
+</div>
+<div class="col-span-2">
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Description</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm italic">Updated limit for Tier 2 Auto Policies</p>
+</div>
+</div>
+</div>
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="flex size-8 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
+<span class="material-symbols-outlined text-base">report</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold">Login Denied</span>
+</div>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">Yesterday</span>
+</div>
+<div class="ml-10 grid grid-cols-2 gap-y-2">
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Username</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">j.smith_ext</p>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">IP Address</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">45.22.108.9</p>
+</div>
+<div class="col-span-2">
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Status</p>
+<p class="text-rose-500 text-sm font-medium">Failed MFA Verification</p>
+</div>
+</div>
+</div>
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="flex size-8 items-center justify-center rounded-full bg-blue-500/10 text-blue-500">
+<span class="material-symbols-outlined text-base">ios_share</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold">Export Logs</span>
+</div>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">Yesterday</span>
+</div>
+<div class="ml-10 grid grid-cols-2 gap-y-2">
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">System Admin</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Admin_1</p>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">IP Address</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Local</p>
+</div>
+<div class="col-span-2">
+<p class="text-slate-500 dark:text-slate-500 text-[10px] uppercase font-bold">Action Detail</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium italic">CSV export of Q3 Liability Audits</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 flex justify-center">
+<button class="text-primary font-bold text-sm flex items-center gap-2 px-6 py-3 rounded-full bg-primary/5 border border-primary/10">
+                    Load More Entries
+                    <span class="material-symbols-outlined text-base">expand_more</span>
+</button>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md pb-6 pt-2 px-4 flex justify-between items-end z-20">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">description</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Policies</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<div class="relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+<div class="absolute -top-1 -right-1 size-2 bg-primary rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Audit</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Settings</p>
+</a>
+</nav>
+</div>
+</body></html>

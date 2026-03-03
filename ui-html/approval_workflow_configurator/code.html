@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Approval Workflow Configurator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-white dark:bg-slate-900 p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-2xl cursor-pointer">close</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center font-display">Approval Workflow</h2>
+<div class="flex w-12 items-center justify-end">
+<p class="text-primary text-base font-bold leading-normal tracking-[0.015em] shrink-0 cursor-pointer">Save</p>
+</div>
+</div>
+<!-- Stepper Indicators -->
+<div class="flex w-full flex-row items-center justify-center gap-3 py-6 bg-white dark:bg-slate-900">
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-primary shadow-sm shadow-primary/40"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<div class="px-4 py-6">
+<h2 class="text-slate-900 dark:text-slate-100 text-[22px] font-bold leading-tight tracking-[-0.015em] mb-1 font-display">Workflow Hierarchy</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Define the sequential review path for policies</p>
+<!-- Visual Mapping Tool / Hierarchy -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="grid grid-cols-[40px_1fr] gap-x-4">
+<!-- Node 1 -->
+<div class="flex flex-col items-center">
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="w-[2px] bg-slate-200 dark:bg-slate-700 h-10 grow"></div>
+</div>
+<div class="flex flex-1 flex-col pb-8">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-normal">Underwriter Review</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Initial policy assessment</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">edit</span>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="flex flex-col items-center">
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">shield_person</span>
+</div>
+<div class="w-[2px] bg-slate-200 dark:bg-slate-700 h-10 grow"></div>
+</div>
+<div class="flex flex-1 flex-col pb-8">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-normal">Senior Underwriter</p>
+<p class="text-primary text-sm font-semibold">Trigger: &gt;$1,000,000 Sum Insured</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">edit</span>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="flex flex-col items-center">
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-normal">VP Underwriting</p>
+<p class="text-primary text-sm font-semibold">Trigger: &gt;$5,000,000 Sum Insured</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">edit</span>
+</div>
+</div>
+</div>
+<!-- Add Step Button -->
+<div class="mt-8 flex justify-center">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-dashed border-primary text-primary text-sm font-bold">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Add Approval Level
+                    </button>
+</div>
+</div>
+<!-- Trigger Limits Section -->
+<div class="mt-10">
+<h2 class="text-slate-900 dark:text-slate-100 text-[22px] font-bold leading-tight tracking-[-0.015em] mb-1 font-display">Trigger Limits</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Conditions that escalate the workflow</p>
+<div class="space-y-4">
+<!-- Limit Card 1 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-3">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-400">Escalation Rule 01</span>
+<span class="material-symbols-outlined text-slate-300">more_horiz</span>
+</div>
+<div class="flex flex-col gap-3">
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Attribute</label>
+<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">Sum Insured</span>
+<span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Operator</label>
+<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">Greater than</span>
+<span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+</div>
+</div>
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Threshold</label>
+<div class="flex items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">$ 1,000,000</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Limit Card 2 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-3">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-400">Escalation Rule 02</span>
+<span class="material-symbols-outlined text-slate-300">more_horiz</span>
+</div>
+<div class="flex flex-col gap-3 opacity-60">
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Attribute</label>
+<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">Risk Category</span>
+<span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Operator</label>
+<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">Equals</span>
+<span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+</div>
+</div>
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400">Threshold</label>
+<div class="flex items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
+<span class="text-sm font-medium">High</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action -->
+<div class="mt-12 mb-8">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95">
+                    Continue to Governance Rules
+                </button>
+<p class="text-center text-slate-400 text-xs mt-4">All changes are tracked in the compliance audit log</p>
+</div>
+</div>
+<div class="h-10 bg-transparent"></div>
+</div>
+</body></html>

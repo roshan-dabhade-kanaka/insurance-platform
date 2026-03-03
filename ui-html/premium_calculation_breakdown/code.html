@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Premium Calculation Breakdown</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden max-w-[430px] mx-auto shadow-2xl">
+<!-- Header -->
+<div class="sticky top-0 z-10 flex items-center bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 justify-between">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Premium Breakdown</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex items-center justify-center text-slate-900 dark:text-slate-100 p-0">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Main Content Scroll Area -->
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Summary Card -->
+<div class="p-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-primary text-white shadow-lg shadow-primary/20">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-white/80 text-sm font-medium leading-normal">Total Annual Premium</p>
+<p class="text-white tracking-tight text-3xl font-extrabold leading-tight mt-1">$4,285.50</p>
+</div>
+<div class="bg-white/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">payments</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2 text-xs font-semibold bg-white/10 w-fit px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                        CALCULATED ON OCT 24, 2023
+                    </div>
+</div>
+</div>
+<!-- Risk Factor Bar Chart Section -->
+<div class="px-4 py-2">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-bold mb-4">Risk Contribution</h3>
+<div class="space-y-4">
+<!-- Chart Item -->
+<div class="space-y-1.5">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+<span>Base Rate</span>
+<span class="text-slate-900 dark:text-slate-100">$2,400.00</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 56%;"></div>
+</div>
+</div>
+<!-- Chart Item -->
+<div class="space-y-1.5">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+<span>Location Risk</span>
+<span class="text-slate-900 dark:text-slate-100">+$850.00</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 rounded-full" style="width: 20%;"></div>
+</div>
+</div>
+<!-- Chart Item -->
+<div class="space-y-1.5">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+<span>Claims History</span>
+<span class="text-slate-900 dark:text-slate-100">+$640.00</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-red-500 rounded-full" style="width: 15%;"></div>
+</div>
+</div>
+<!-- Chart Item -->
+<div class="space-y-1.5">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+<span>Safety Discounts</span>
+<span class="text-emerald-600">-$320.00</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 8%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Table Breakdown -->
+<div class="px-4 py-4">
+<h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold px-1 mb-3">Itemized Details</h3>
+<div class="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="p-4 flex justify-between items-center">
+<span class="text-slate-600 dark:text-slate-400 font-medium">Standard Base Rate</span>
+<span class="text-slate-900 dark:text-slate-100 font-bold">$2,400.00</span>
+</div>
+<div class="p-4 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+<div class="flex flex-col">
+<span class="text-slate-600 dark:text-slate-400 font-medium">Urban Surcharge</span>
+<span class="text-[10px] font-bold text-primary uppercase">Location Factor 1.3x</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold">+$850.00</span>
+</div>
+<div class="p-4 flex justify-between items-center">
+<span class="text-slate-600 dark:text-slate-400 font-medium">Prior Loss History</span>
+<span class="text-slate-900 dark:text-slate-100 font-bold">+$640.50</span>
+</div>
+<div class="p-4 flex justify-between items-center bg-emerald-50/30 dark:bg-emerald-900/10">
+<span class="text-emerald-700 dark:text-emerald-400 font-medium">Multi-Policy Discount</span>
+<span class="text-emerald-700 dark:text-emerald-400 font-bold">-$245.00</span>
+</div>
+<div class="p-4 flex justify-between items-center">
+<span class="text-slate-600 dark:text-slate-400 font-medium">State Taxes &amp; Fees</span>
+<span class="text-slate-900 dark:text-slate-100 font-bold">$140.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recalculate CTA -->
+<div class="px-4 py-4">
+<button class="w-full bg-slate-900 dark:bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">refresh</span>
+                    Recalculate Premium
+                </button>
+<p class="text-center text-slate-500 dark:text-slate-400 text-xs mt-3 px-6 leading-relaxed">
+                    Underwriters can modify parameters in the policy editor to test different risk scenarios.
+                </p>
+</div>
+</div>
+<!-- Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 pb-6 pt-3 flex justify-around">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Dash</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">description</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Policy</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">calculate</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Pricing</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Admin</p>
+</a>
+</div>
+</div>
+</body></html>

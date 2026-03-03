@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lifecycle State Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-4 border-b border-slate-200 dark:border-slate-800 justify-between">
+<div class="flex items-center gap-3">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div>
+<h1 class="text-lg font-bold leading-none tracking-tight">Lifecycle Editor</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider font-semibold">Insurance Policy Platform</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">check</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- Flow Visualizer Placeholder -->
+<section class="px-4 pt-6">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Workflow Preview</h2>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">fullscreen</span> Expand
+                </button>
+</div>
+<div class="relative w-full aspect-[4/3] bg-slate-100 dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#135bec_1px,transparent_1px)] [background-size:20px_20px]"></div>
+<div class="relative flex flex-col items-center gap-6">
+<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-3 w-40">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-xs font-semibold">Initial Intake</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">south</span>
+<div class="bg-primary p-3 rounded-lg shadow-xl shadow-primary/20 flex items-center gap-3 w-44 scale-110">
+<div class="size-2 rounded-full bg-white animate-pulse"></div>
+<span class="text-xs font-bold text-white">Awaiting Evidence</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">south</span>
+<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-3 w-40 opacity-50">
+<div class="size-2 rounded-full bg-slate-400"></div>
+<span class="text-xs font-semibold">Under Review</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Configuration -->
+<section class="px-4 pt-8">
+<h2 class="text-xl font-extrabold mb-4">State Configuration</h2>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">State Name</label>
+<input class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="e.g. Under Review" type="text" value="Awaiting Evidence"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Base Type</label>
+<div class="relative">
+<select class="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-10 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+<option>Pending</option>
+<option>Active</option>
+<option>Resolved</option>
+<option>Closed</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">unfold_more</span>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Priority</label>
+<div class="relative">
+<select class="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-10 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+<option>Normal</option>
+<option>High</option>
+<option>Critical</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">unfold_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Transitions & Hooks -->
+<section class="px-4 pt-8">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-extrabold">Action Hooks</h2>
+<button class="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span> New Hook
+                </button>
+</div>
+<div class="space-y-3">
+<!-- Hook Item 1 -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">mail</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h3 class="font-bold text-sm">Customer Email Notification</h3>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 uppercase">On Enter</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">Triggers policy_evidence_request_v2 template...</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Hook Item 2 -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-4">
+<div class="size-10 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-orange-500">api</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h3 class="font-bold text-sm">External System Sync</h3>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 uppercase">On Enter</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">POST https://api.claims-engine.io/sync</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Allowed Transitions -->
+<section class="px-4 pt-8">
+<h2 class="text-xl font-extrabold mb-4">Transitions Out</h2>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">swap_horiz</span>
+<span class="font-medium text-sm">Escalated</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 text-lg">lock_open</span>
+<div class="w-10 h-6 bg-primary rounded-full relative flex items-center px-1">
+<div class="size-4 bg-white rounded-full absolute right-1"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">swap_horiz</span>
+<span class="font-medium text-sm">Resolved</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 text-lg">lock</span>
+<div class="w-10 h-6 bg-slate-200 dark:bg-slate-700 rounded-full relative flex items-center px-1">
+<div class="size-4 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 safe-area-bottom">
+<div class="flex h-16 items-center justify-around px-4">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined font-variation-fill-1">hub</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">States</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Hooks</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Preview</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Global</span>
+</a>
+</div>
+</nav>
+<style>
+        .font-variation-fill-1 {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</body></html>
