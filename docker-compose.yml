@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: insurance-db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-insurance_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - insurance-network
+
+  temporal:
+    image: temporalio/admin-tools:1.22.4 # Temporal Lite or Server could be used here
+    container_name: insurance-temporal
+    ports:
+      - "7233:7233"
+      - "8233:8233"
+    environment:
+      - TEMPORAL_ADDRESS=localhost:7233
+    networks:
+      - insurance-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: insurance-api
+    depends_on:
+      - db
+      - temporal
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-insurance_db}
+      - TEMPORAL_ADDRESS=temporal:7233
+    ports:
+      - "3000:3000"
+    networks:
+      - insurance-network
+
+  admin-ui:
+    build:
+      context: ./admin_app
+      dockerfile: Dockerfile
+    container_name: insurance-admin-ui
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    networks:
+      - insurance-network
+
+networks:
+  insurance-network:
+    driver: bridge
+
+volumes:
+  pgdata:
