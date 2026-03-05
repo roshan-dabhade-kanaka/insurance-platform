@@ -25,8 +25,13 @@ class FraudReviewPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const InfoBox(
+            message:
+                'Claims flagged by the fraud detection engine require manual review to clear or escalate for investigation.',
+          ),
+          const SizedBox(height: 24),
           fraudState.when(
-            loading: () => const LinearProgressIndicator(),
+            loading: () => const AppLoader(),
             error: (err, stack) => Center(child: Text('Error: $err')),
             data: (claims) {
               if (claims.isEmpty) {

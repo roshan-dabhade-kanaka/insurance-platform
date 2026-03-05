@@ -24,8 +24,13 @@ class ClaimSubmissionPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const InfoBox(
+            message:
+                'Submit a new claim for an existing policy. Provide the policy details, loss information, and requested amount.',
+          ),
+          const SizedBox(height: 24),
           if (claimState.isLoading)
-            const LinearProgressIndicator()
+            const AppLoader()
           else
             DynamicFormWidget(
               fields: const [

@@ -161,16 +161,29 @@ export class QuoteService {
 
         // Resolve productVersionId (frontend may send product.id; we need product_version.id)
         const productVersionId = await this.getOrCreateProductVersion(dto.tenantId, dto.productVersionId);
-        // Resolve coverage option IDs (frontend may send placeholder; we need valid coverage_options.id)
+
+        // Resolve and validate coverage options
         const resolvedLineItems = await Promise.all(
-            dto.lineItems.map(async (li) => ({
-                ...li,
-                coverageOptionId: await this.getOrCreateDefaultCoverageOption(
+            dto.lineItems.map(async (li) => {
+                const coverageId = await this.getOrCreateDefaultCoverageOption(
                     dto.tenantId,
                     productVersionId,
                     li.coverageOptionId,
-                ),
-            })),
+                );
+
+                const coverage = await this.coverageOptionRepo.findOne({ where: { id: coverageId } });
+                if (coverage) {
+                    const min = parseFloat(coverage.minSumInsured || '0');
+                    const max = parseFloat(coverage.maxSumInsured || '999999999');
+                    if (li.sumInsured < min || li.sumInsured > max) {
+                        throw new BadRequestException(
+                            `Sum Insured ${li.sumInsured} for ${coverage.name} is out of bounds [${min} - ${max}]`,
+                        );
+                    }
+                }
+
+                return { ...li, coverageOptionId: coverageId };
+            }),
         );
 
         const quoteNumber = this.generateQuoteNumber();

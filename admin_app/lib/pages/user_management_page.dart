@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/widgets.dart';
 import '../providers/admin_providers.dart';
 import '../theme/app_theme.dart';
 
@@ -17,36 +18,20 @@ class UserManagementPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Text(
-                'User Management',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const Spacer(),
-              FilledButton.icon(
-                onPressed: () => ref.refresh(usersProvider),
-                icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Refresh'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'All users registered in the system.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          const InfoBox(message: 'All users registered in the system.'),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => ref.refresh(usersProvider),
+              icon: const Icon(Icons.refresh, size: 16),
+              label: const Text('Refresh table'),
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           usersAsync.when(
             loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(48),
-                child: CircularProgressIndicator(),
-              ),
+              child: Padding(padding: EdgeInsets.all(48), child: AppLoader()),
             ),
             error: (err, _) => _ErrorCard(
               message: err.toString(),

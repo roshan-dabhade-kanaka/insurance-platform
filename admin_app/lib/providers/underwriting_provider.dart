@@ -11,7 +11,7 @@ class UnderwritingNotifier
   Future<void> fetchCases() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/underwriting');
+      final response = await _apiClient.get('underwriting');
       final List<dynamic> data = response.data;
       final cases = data
           .map((json) => UnderwritingCase.fromJson(json))
@@ -24,7 +24,7 @@ class UnderwritingNotifier
 
   Future<void> approveCase(String id, Map<String, dynamic> decisionData) async {
     try {
-      await _apiClient.post('/underwriting/$id/approve', data: decisionData);
+      await _apiClient.post('underwriting/$id/approve', data: decisionData);
       await fetchCases();
     } catch (e) {
       rethrow;
@@ -33,7 +33,7 @@ class UnderwritingNotifier
 
   Future<void> rejectCase(String id, Map<String, dynamic> decisionData) async {
     try {
-      await _apiClient.post('/underwriting/$id/reject', data: decisionData);
+      await _apiClient.post('underwriting/$id/reject', data: decisionData);
       await fetchCases();
     } catch (e) {
       rethrow;
@@ -47,7 +47,7 @@ class UnderwritingNotifier
   ) async {
     try {
       await _apiClient.post(
-        '/underwriting/$id/escalate',
+        'underwriting/$id/escalate',
         data: {'escalatedFrom': escalatedFrom, 'reason': reason},
       );
       await fetchCases();
@@ -62,7 +62,7 @@ class UnderwritingNotifier
   ) async {
     try {
       final response = await _apiClient.post(
-        '/underwriting/$id/lock',
+        'underwriting/$id/lock',
         data: {'underwriterId': underwriterId},
       );
       return response.data;

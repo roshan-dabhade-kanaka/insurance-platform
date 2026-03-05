@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/api_client.dart';
 import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 
 /// Report types available for generation.
 enum _ReportType {
@@ -46,14 +47,14 @@ class _ReportGenerationPageState extends ConsumerState<ReportGenerationPage> {
     });
     try {
       final client = ref.read(apiClientProvider);
-      final body = <String, dynamic>{
+      final payload = <String, dynamic>{
         'reportType': _selectedType!.apiKey,
         if (_dateRange != null) ...{
           'fromDate': _dateRange!.start.toIso8601String().substring(0, 10),
           'toDate': _dateRange!.end.toIso8601String().substring(0, 10),
         },
       };
-      final res = await client.post('/reports/generate', data: body);
+      final res = await client.post('reports/generate', data: payload);
       if (res.statusCode == 200 || res.statusCode == 201) {
         if (mounted) {
           _showDownloadDialog();
@@ -118,15 +119,9 @@ class _ReportGenerationPageState extends ConsumerState<ReportGenerationPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            ),
+            const AppLoader(size: 16, center: false),
             const SizedBox(width: 12),
             Text('Downloading $filename...'),
           ],
@@ -167,18 +162,9 @@ class _ReportGenerationPageState extends ConsumerState<ReportGenerationPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Report Generation',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Select a report type and optional date range, then generate.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+          const InfoBox(
+            message:
+                'Select a report type and optional date range, then generate.',
           ),
           const SizedBox(height: 24),
           // ── Report type grid ───────────────────────────────────────────
@@ -294,14 +280,7 @@ class _ReportGenerationPageState extends ConsumerState<ReportGenerationPage> {
           FilledButton.icon(
             onPressed: _loading ? null : _generate,
             icon: _loading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
+                ? const AppLoader(size: 18, center: false)
                 : const Icon(Icons.download_outlined),
             label: Text(_loading ? 'Generating…' : 'Generate Report'),
           ),

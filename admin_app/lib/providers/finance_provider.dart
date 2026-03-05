@@ -10,7 +10,7 @@ class FinanceNotifier extends StateNotifier<AsyncValue<List<PayoutRequest>>> {
   Future<void> fetchPendingPayouts() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/payouts');
+      final response = await _apiClient.get('payouts');
       final List<dynamic> data = response.data;
       final requests = data
           .map((json) => PayoutRequest.fromJson(json))
@@ -26,7 +26,7 @@ class FinanceNotifier extends StateNotifier<AsyncValue<List<PayoutRequest>>> {
     Map<String, dynamic> approvalData,
   ) async {
     try {
-      await _apiClient.post('/payouts/$claimId/approve', data: approvalData);
+      await _apiClient.post('payouts/$claimId/approve', data: approvalData);
       await fetchPendingPayouts();
     } catch (e) {
       rethrow;
@@ -40,7 +40,7 @@ class FinanceNotifier extends StateNotifier<AsyncValue<List<PayoutRequest>>> {
   ) async {
     try {
       await _apiClient.post(
-        '/payouts/$payoutRequestId/pay',
+        'payouts/$payoutRequestId/pay',
         data: {...paymentData, 'claimId': claimId},
       );
       await fetchPendingPayouts();

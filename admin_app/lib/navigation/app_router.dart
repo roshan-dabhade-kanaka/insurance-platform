@@ -5,6 +5,8 @@ import '../auth/auth_provider.dart';
 import '../auth/role_access.dart';
 import '../layout/app_layout.dart';
 import '../pages/pages.dart';
+import '../screens/rule_builder_screen.dart';
+import '../screens/create_quote_screen.dart';
 
 /// Route paths and sidebar config. Single source for nav destinations.
 class AppRouter {
@@ -15,6 +17,7 @@ class AppRouter {
   static const String productConfig = '/product-configuration';
   static const String coverageSetup = '/coverage-setup';
   static const String ruleConfig = '/rule-configuration';
+  static const String ruleBuilder = '/rule-builder';
   static const String riskProfiling = '/risk-profiling';
   static const String premiumCalculation = '/premium-calculation';
   static const String quoteCreation = '/quote-creation';
@@ -231,6 +234,19 @@ class AppRouter {
                   const NoTransitionPage(child: RuleConfigurationPage()),
             ),
             GoRoute(
+              path: '/rule-builder',
+              pageBuilder: (context, state) {
+                final extra = state.extra as Map<String, dynamic>?;
+                return NoTransitionPage(
+                  child: RuleBuilderScreen(
+                    versionId: extra?['versionId'],
+                    initialRuleType: extra?['ruleType'],
+                    existingRule: extra?['existingRule'],
+                  ),
+                );
+              },
+            ),
+            GoRoute(
               path: '/risk-profiling',
               pageBuilder: (context, state) =>
                   const NoTransitionPage(child: RiskProfilingPage()),
@@ -243,7 +259,7 @@ class AppRouter {
             GoRoute(
               path: '/quote-creation',
               pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: QuoteCreationPage()),
+                  const NoTransitionPage(child: CreateQuoteScreen()),
             ),
             GoRoute(
               path: '/quote-lifecycle',

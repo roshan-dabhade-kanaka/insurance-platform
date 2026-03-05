@@ -1,0 +1,66 @@
+Analyzing admin_app...                                          
+
+   info - Statements in an if should be enclosed in a block - lib\auth\auth_provider.dart:69:9 - curly_braces_in_flow_control_structures
+   info - Angle brackets will be interpreted as HTML - lib\auth\jwt_utils.dart:27:18 - unintended_html_in_doc_comment
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\compliance_audit_logs_page.dart:209:27 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\coverage_setup_page.dart:62:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\coverage_setup_page.dart:82:21 - deprecated_member_use
+   info - The local variable '_e' starts with an underscore - lib\pages\dashboard_page.dart:157:32 - no_leading_underscores_for_local_identifiers
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\document_template_manager_page.dart:132:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\document_template_manager_page.dart:133:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\document_template_manager_page.dart:156:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\document_template_manager_page.dart:165:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\document_template_manager_page.dart:166:40 - use_build_context_synchronously
+   info - The local variable '_e' starts with an underscore - lib\pages\finance_payout_approval_page.dart:58:40 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_e' starts with an underscore - lib\pages\finance_payout_approval_page.dart:71:40 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_e' starts with an underscore - lib\pages\finance_payout_approval_page.dart:102:38 - no_leading_underscores_for_local_identifiers
+   info - Redundant initialization to 'null' - lib\pages\login_page.dart:20:11 - avoid_init_to_null
+   info - Statements in an if should be enclosed in a block - lib\pages\login_page.dart:71:9 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores - lib\pages\policy_issuance_page.dart:115:51 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\policy_issuance_page.dart:126:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\policy_issuance_page.dart:130:56 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\premium_calculation_page.dart:218:29 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\premium_calculation_page.dart:242:29 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\premium_calculation_page.dart:272:27 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\premium_calculation_page.dart:303:27 - deprecated_member_use
+   info - 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre - lib\pages\premium_calculation_page.dart:340:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:341:42 - deprecated_member_use
+   info - 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre - lib\pages\premium_calculation_page.dart:402:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:402:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:407:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:416:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:454:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\premium_calculation_page.dart:459:65 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\product_builder_page.dart:61:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\product_builder_page.dart:63:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\product_builder_page.dart:73:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\product_builder_page.dart:74:40 - use_build_context_synchronously
+   info - Unnecessary use of multiple underscores - lib\pages\product_configuration_page.dart:99:24 - unnecessary_underscores
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\product_configuration_page.dart:391:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\product_configuration_page.dart:578:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\product_configuration_page.dart:663:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\product_configuration_page.dart:664:63 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\quote_creation_page.dart:183:50 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\pages\quote_creation_page.dart:191:50 - use_build_context_synchronously
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\quote_lifecycle_page.dart:250:23 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\quote_lifecycle_page.dart:276:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:363:60 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\pages\quote_lifecycle_page.dart:389:39 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:410:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:467:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:470:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:573:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:599:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\pages\quote_lifecycle_page.dart:618:66 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\rule_configuration_page.dart:62:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\pages\rule_configuration_page.dart:81:21 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\pages\underwriting_decision_page.dart:36:24 - unnecessary_underscores
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\widgets\dynamic_form_widget.dart:311:19 - deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\widgets\dynamic_form_widget.dart:312:19 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\widgets\dynamic_form_widget.dart:328:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\widgets\dynamic_form_widget.dart:330:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\widgets\dynamic_form_widget.dart:332:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\widgets\dynamic_form_widget.dart:334:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\widgets\dynamic_form_widget.dart:336:7 - curly_braces_in_flow_control_structures
+
+62 issues found. (ran in 7.0s)

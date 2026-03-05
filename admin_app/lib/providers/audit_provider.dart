@@ -116,7 +116,7 @@ class AuditNotifier extends StateNotifier<AsyncValue<AuditListState>> {
       }
 
       final response = await _apiClient.get(
-        '/audit/logs',
+        'audit/logs',
         queryParameters: queryParams,
       );
 
@@ -217,7 +217,7 @@ class AuditNotifier extends StateNotifier<AsyncValue<AuditListState>> {
     state = const AsyncValue.loading();
     try {
       final response = await _apiClient.get(
-        '/audit/$entityId',
+        'audit/$entityId',
         queryParameters: {'entityType': entityType},
       );
       final List<dynamic> data = response.data is List

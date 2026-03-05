@@ -49,7 +49,7 @@ class SLAMonitoringPage extends ConsumerWidget {
                   )
                   .toList(),
             ),
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const AppLoader(),
             error: (e, _) => Center(child: Text('Error loading SLA data: $e')),
           ),
         ],

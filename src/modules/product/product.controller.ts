@@ -79,4 +79,26 @@ export class ProductController {
         if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
         return this.productService.addCoverageOption(id, vId, tenantId, dto);
     }
+
+    @Get(':id/coverages')
+    @ApiOperation({ summary: 'Get coverages for a product (active version)' })
+    async getCoverages(
+        @Param('id') id: string,
+        @Headers('x-tenant-id') tenantId?: string,
+        @Query('tenantId') tenantIdQuery?: string,
+    ) {
+        const tid = tenantId ?? tenantIdQuery;
+        return this.productService.getCoverages(id, tid);
+    }
+
+    @Get(':id/quote-fields')
+    @ApiOperation({ summary: 'Get dynamic quote input fields for a product (active version)' })
+    async getQuoteFields(
+        @Param('id') id: string,
+        @Headers('x-tenant-id') tenantId?: string,
+        @Query('tenantId') tenantIdQuery?: string,
+    ) {
+        const tid = tenantId ?? tenantIdQuery;
+        return this.productService.getQuoteFields(id, tid);
+    }
 }

@@ -30,13 +30,13 @@ class _WorkflowConfiguratorPageState
     const LifecycleStateNode(
       id: '2',
       label: 'Senior Underwriter',
-      subtitle: 'Trigger: >\$1,000,000',
+      subtitle: 'Trigger: >₹1,000,000',
       isActive: true,
     ),
     const LifecycleStateNode(
       id: '3',
       label: 'VP Underwriting',
-      subtitle: 'Trigger: >\$5,000,000',
+      subtitle: 'Trigger: >₹5,000,000',
     ),
   ];
 
@@ -78,7 +78,7 @@ class _WorkflowConfiguratorPageState
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const AppLoader(),
     );
 
     try {
@@ -90,7 +90,7 @@ class _WorkflowConfiguratorPageState
       };
 
       // Real API call
-      await client.post('/workflows', data: payload);
+      await client.post('workflows', data: payload);
 
       if (mounted) {
         Navigator.pop(context); // Close loading
@@ -131,40 +131,7 @@ class _WorkflowConfiguratorPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Workflow hierarchy',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: _currentStep > 0
-                      ? () => setState(() => _currentStep--)
-                      : null,
-                  icon: const Icon(Icons.arrow_back),
-                ),
-                IconButton(
-                  onPressed: _currentStep < _steps.length - 1
-                      ? () => setState(() => _currentStep++)
-                      : null,
-                  icon: const Icon(Icons.arrow_forward),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Define the sequential review path for policies.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
+        InfoBox(message: 'Define the sequential review path for policies.'),
         const SizedBox(height: 16),
         LifecycleEditorWidget(states: _states, onAddState: _showAddStateDialog),
       ],
@@ -175,26 +142,23 @@ class _WorkflowConfiguratorPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Approval Triggers',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        InfoBox(
+          message: 'Define automatic approval routing based on conditions.',
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         const Card(
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
                 ListTile(
-                  title: Text('Sum Insured > \$1M'),
+                  title: Text('Sum Insured > ₹1M'),
                   subtitle: Text('Routes to Senior Underwriter'),
                   trailing: Icon(Icons.settings),
                 ),
                 Divider(),
                 ListTile(
-                  title: Text('Sum Insured > \$5M'),
+                  title: Text('Sum Insured > ₹5M'),
                   subtitle: Text('Routes to VP Underwriting'),
                   trailing: Icon(Icons.settings),
                 ),
@@ -216,16 +180,8 @@ class _WorkflowConfiguratorPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Final Review',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Review the workflow nodes and triggers before saving.',
-          style: Theme.of(context).textTheme.bodyMedium,
+        const InfoBox(
+          message: 'Review the workflow nodes and triggers before saving.',
         ),
         const SizedBox(height: 24),
         ..._states.map(

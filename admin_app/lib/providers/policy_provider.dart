@@ -10,7 +10,7 @@ class PolicyNotifier extends StateNotifier<AsyncValue<List<Policy>>> {
   Future<void> fetchPolicies() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/policies');
+      final response = await _apiClient.get('policies');
       final List<dynamic> data = response.data;
       final policies = data.map((json) => Policy.fromJson(json)).toList();
       state = AsyncValue.data(policies);
@@ -25,7 +25,7 @@ class PolicyNotifier extends StateNotifier<AsyncValue<List<Policy>>> {
   ]) async {
     try {
       final response = await _apiClient.post(
-        '/policies/$quoteId/issue',
+        'policies/$quoteId/issue',
         data: issueData,
       );
       final policy = Policy.fromJson(response.data);

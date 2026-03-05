@@ -1,0 +1,27 @@
+This project uses (from docs/):
+
+docs/ARCHITECTURE.md
+docs/DOMAIN.md
+docs/WORKFLOWS.md
+docs/SKILLS.md
+
+as source of truth for:
+
+Insurance underwriting workflows
+Policy lifecycle
+Claim lifecycle
+Rule-driven premium engine
+Multi-tenant insurance configuration
+
+Always follow constraints defined in these files.
+
+Generate:
+Dynamic config-driven UI
+Workflow-based decision panels
+Reusable Flutter form widgets
+Audit-safe approval flows
+
+Never generate:
+Hardcoded eligibility logic
+Inline premium calculations
+Direct state transitions

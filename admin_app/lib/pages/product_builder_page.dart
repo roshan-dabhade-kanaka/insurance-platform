@@ -22,6 +22,11 @@ class _ProductBuilderPageState extends ConsumerState<ProductBuilderPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const InfoBox(
+            message:
+                'Use the visual builder to define new insurance products. Set the line of business, code, and base configuration.',
+          ),
+          const SizedBox(height: 24),
           DynamicFormWidget(
             fields: const [
               DynamicFormField(
@@ -42,14 +47,13 @@ class _ProductBuilderPageState extends ConsumerState<ProductBuilderPage> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
+                builder: (context) => const AppLoader(),
               );
 
               try {
                 final client = ref.read(apiClientProvider);
                 final res = await client.post(
-                  '/products',
+                  'products',
                   data: {...values, 'isActive': true},
                 );
 

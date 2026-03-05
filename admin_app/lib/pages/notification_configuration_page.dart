@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/api_client.dart';
 import '../widgets/widgets.dart';
+import '../core/api_client.dart';
 import '../providers/notification_config_provider.dart';
 
 /// Notification configuration: load from API, toggle channels via API.
@@ -17,15 +17,13 @@ class NotificationConfigurationPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Notification channels',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+          const InfoBox(
+            message:
+                'Configure how and when users receive notifications about policy and claim events.',
           ),
           const SizedBox(height: 24),
           configAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const AppLoader(),
             error: (e, _) => Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -74,7 +72,7 @@ class NotificationConfigurationPage extends ConsumerWidget {
                     if (id == 'push') patch['pushEnabled'] = enabled;
                     if (patch.isNotEmpty) {
                       final client = ref.read(apiClientProvider);
-                      await client.post('/notifications/config', data: patch);
+                      await client.post('notifications/config', data: patch);
                       ref.invalidate(notificationConfigProvider);
                     }
                     if (context.mounted) {

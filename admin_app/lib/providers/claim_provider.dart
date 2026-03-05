@@ -10,7 +10,7 @@ class ClaimNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
   Future<void> fetchClaims() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/claims');
+      final response = await _apiClient.get('claims');
       final List<dynamic> data = response.data;
       final claims = data.map((json) => Claim.fromJson(json)).toList();
       state = AsyncValue.data(claims);
@@ -21,7 +21,7 @@ class ClaimNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
 
   Future<Claim> submitClaim(Map<String, dynamic> claimData) async {
     try {
-      final response = await _apiClient.post('/claims', data: claimData);
+      final response = await _apiClient.post('claims', data: claimData);
       final claim = Claim.fromJson(response.data);
       await fetchClaims();
       return claim;
@@ -35,7 +35,7 @@ class ClaimNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
     Map<String, dynamic> investigationData,
   ) async {
     try {
-      await _apiClient.post('/claims/$id/investigate', data: investigationData);
+      await _apiClient.post('claims/$id/investigate', data: investigationData);
       await fetchClaims();
     } catch (e) {
       rethrow;
@@ -49,7 +49,7 @@ class ClaimNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
   ) async {
     try {
       final response = await _apiClient.post(
-        '/claims/$claimId/assess',
+        'claims/$claimId/assess',
         data: assessmentData,
       );
       await fetchClaims();

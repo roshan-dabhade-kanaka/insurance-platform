@@ -6,14 +6,16 @@ import 'auth/auth_provider.dart';
 import 'theme/app_theme.dart';
 import 'navigation/app_router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final authNotifier = AuthNotifier();
-  runApp(ProviderScope(
-    overrides: [
-      authNotifierProvider.overrideWith((ref) => authNotifier),
-    ],
-    child: InsureAdminApp(routerConfig: AppRouter.createRouter(authNotifier)),
-  ));
+  await authNotifier.restoreSession();
+  runApp(
+    ProviderScope(
+      overrides: [authNotifierProvider.overrideWith((ref) => authNotifier)],
+      child: InsureAdminApp(routerConfig: AppRouter.createRouter(authNotifier)),
+    ),
+  );
 }
 
 class InsureAdminApp extends StatelessWidget {

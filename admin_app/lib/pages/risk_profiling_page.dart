@@ -5,7 +5,7 @@ import '../auth/auth_provider.dart';
 import '../core/constants.dart';
 import '../widgets/widgets.dart';
 
-/// Risk profiling form with stepper (from risk_profiling_form).
+/// Risk profiling form with stepper (Personal > Occupation > Health > Review).
 class RiskProfilingPage extends ConsumerStatefulWidget {
   const RiskProfilingPage({super.key});
 
@@ -23,20 +23,27 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
     WorkflowStep(title: 'Personal'),
     WorkflowStep(title: 'Occupation'),
     WorkflowStep(title: 'Health'),
+    WorkflowStep(title: 'History'),
     WorkflowStep(title: 'Review'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    if (_submitted) {
-      return _buildResultView();
-    }
+    if (_submitted) return _buildResultView();
+    return _buildStepView();
+  }
 
+  Widget _buildStepView() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const InfoBox(
+            message:
+                'Provide accurate applicant details across Personal, Occupation, and Health sections. The system will score and profile the risk for pricing.',
+          ),
+          const SizedBox(height: 24),
           WorkflowStepperWidget(
             steps: _steps.asMap().entries.map((e) {
               return e.value.copyWith(
@@ -65,6 +72,8 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
       case 2:
         return _buildHealthStep();
       case 3:
+        return _buildHistoryStep();
+      case 4:
         return _buildReviewStep();
       default:
         return const SizedBox.shrink();
@@ -72,47 +81,37 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
   }
 
   Widget _buildPersonalStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildHeader(
-          'Personal Information',
-          'Provide accurate details for policy pricing.',
+    return DynamicFormWidget(
+      fields: [
+        DynamicFormField(
+          key: 'fullName',
+          label: 'Full Name',
+          hint: 'John Doe',
+          required: true,
+          initialValue: _formData['fullName'],
         ),
-        const SizedBox(height: 24),
-        DynamicFormWidget(
-          fields: [
-            DynamicFormField(
-              key: 'fullName',
-              label: 'Full Name',
-              hint: 'John Doe',
-              required: true,
-              initialValue: _formData['fullName'],
-            ),
-            DynamicFormField(
-              key: 'dob',
-              label: 'Date of Birth',
-              type: DynamicFormFieldType.date,
-              required: true,
-              initialValue: _formData['dob'],
-            ),
-            DynamicFormField(
-              key: 'gender',
-              label: 'Gender',
-              type: DynamicFormFieldType.dropdown,
-              options: const ['Male', 'Female', 'Other'],
-              initialValue: _formData['gender'],
-            ),
-          ],
-          submitLabel: 'Next: Occupation',
-          onSubmit: (values) {
-            setState(() {
-              _formData.addAll(values);
-              _currentStep = 1;
-            });
-          },
+        DynamicFormField(
+          key: 'age',
+          label: 'Age',
+          type: DynamicFormFieldType.number,
+          required: true,
+          initialValue: _formData['age'],
+        ),
+        DynamicFormField(
+          key: 'gender',
+          label: 'Gender',
+          type: DynamicFormFieldType.dropdown,
+          options: const ['Male', 'Female', 'Other'],
+          initialValue: _formData['gender'],
         ),
       ],
+      submitLabel: 'Next: Occupation →',
+      onSubmit: (values) {
+        setState(() {
+          _formData.addAll(values);
+          _currentStep = 1;
+        });
+      },
     );
   }
 
@@ -120,11 +119,6 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildHeader(
-          'Occupation Details',
-          'Tell us about your work environment.',
-        ),
-        const SizedBox(height: 24),
         DynamicFormWidget(
           fields: [
             DynamicFormField(
@@ -154,7 +148,7 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
               initialValue: _formData['industry'],
             ),
           ],
-          submitLabel: 'Next: Health',
+          submitLabel: 'Next: Health →',
           onSubmit: (values) {
             setState(() {
               _formData.addAll(values);
@@ -171,11 +165,6 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildHeader(
-          'Health Assessment',
-          'Basic health questions for risk evaluation.',
-        ),
-        const SizedBox(height: 24),
         DynamicFormWidget(
           fields: [
             const DynamicFormField(
@@ -196,7 +185,7 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
               type: DynamicFormFieldType.checkbox,
             ),
           ],
-          submitLabel: 'Next: Review',
+          submitLabel: 'Next: Review →',
           onSubmit: (values) {
             setState(() {
               _formData.addAll(values);
@@ -209,34 +198,80 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
     );
   }
 
+  Widget _buildHistoryStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DynamicFormWidget(
+          fields: [
+            DynamicFormField(
+              key: 'vehicleHistory',
+              label: 'Vehicle History',
+              type: DynamicFormFieldType.dropdown,
+              options: const ['Clean', 'Minor Accidents', 'Major Accidents'],
+              initialValue: _formData['vehicleHistory'] ?? 'Clean',
+            ),
+            DynamicFormField(
+              key: 'propertyDetails',
+              label: 'Property Details (optional)',
+              hint: 'Type of property, alarms installed etc.',
+              initialValue: _formData['propertyDetails'],
+            ),
+            DynamicFormField(
+              key: 'previousClaims',
+              label: 'Number of Previous Claims',
+              type: DynamicFormFieldType.number,
+              hint: '0',
+              required: true,
+              initialValue: _formData['previousClaims'] ?? 0,
+            ),
+          ],
+          submitLabel: 'Next: Review →',
+          onSubmit: (values) {
+            setState(() {
+              _formData.addAll(values);
+              _currentStep = 4;
+            });
+          },
+        ),
+        _buildBackButton(),
+      ],
+    );
+  }
+
   Widget _buildReviewStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildHeader(
-          'Review & Submit',
-          'Check your details before assessment.',
-        ),
-        const SizedBox(height: 24),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: _formData.entries.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        e.key.toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(e.value.toString()),
-                    ],
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Review your details',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
-                );
-              }).toList(),
+                ),
+                const Divider(height: 24),
+                ..._formData.entries.map((e) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          e.key,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(e.value.toString()),
+                      ],
+                    ),
+                  );
+                }),
+              ],
             ),
           ),
         ),
@@ -250,31 +285,11 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
     );
   }
 
-  Widget _buildHeader(String title, String subtitle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBackButton() {
-    return TextButton(
+    return TextButton.icon(
       onPressed: () => setState(() => _currentStep--),
-      child: const Text('Back'),
+      icon: const Icon(Icons.arrow_back, size: 16),
+      label: const Text('Back'),
     );
   }
 
@@ -287,17 +302,17 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+        builder: (context) => const AppLoader(),
       );
 
       final res = await client.post(
-        '/risk/assess',
+        'risk/assess',
         data: _formData,
         queryParameters: {'tenantId': tenantId},
       );
 
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop(); // Close loader
+        Navigator.of(context, rootNavigator: true).pop();
         if (res.statusCode == 201 || res.statusCode == 200) {
           setState(() {
             _submitted = true;
@@ -333,15 +348,30 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Risk Score: ${_results?['score'] ?? '75/100'}',
-            style: Theme.of(context).textTheme.titleLarge,
+            'Risk Score: ${_results?['totalScore'] ?? '750'}/1000',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            'Status: ${_results?['status'] ?? 'ELIGIBLE'}',
+            'Category: ${_results?['riskBand'] ?? 'STANDARD'}',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.green.shade700,
+              color: Colors.blue.shade700,
               fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Premium Adjustment: ${_results?['loadingPercentage'] ?? '0.00'}%',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color:
+                  (_results?['loadingPercentage'] ?? '0').toString().startsWith(
+                    '-',
+                  )
+                  ? Colors.green.shade700
+                  : Colors.orange.shade800,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 48),
@@ -350,6 +380,7 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
               _submitted = false;
               _currentStep = 0;
               _formData.clear();
+              _results = null;
             }),
             child: const Text('Restart Assessment'),
           ),

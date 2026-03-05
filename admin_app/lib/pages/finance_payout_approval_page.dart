@@ -24,7 +24,12 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (financeState.isLoading) const LinearProgressIndicator(),
+          const InfoBox(
+            message:
+                'Approve or hold pending disbursements. Approved payouts will be processed by the finance integration service.',
+          ),
+          const SizedBox(height: 24),
+          if (financeState.isLoading) const AppLoader(),
           Row(
             children: [
               // ── Pending disbursement card (live from API) ──────────────
@@ -92,10 +97,8 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         processedAsync.when(
-                          loading: () => const SizedBox(
-                            height: 28,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
+                          loading: () =>
+                              const SizedBox(height: 28, child: AppLoader()),
                           error: (_, _e) => Text(
                             '—',
                             style: theme.textTheme.headlineSmall?.copyWith(
@@ -134,7 +137,7 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
           const SizedBox(height: 24),
           // ── Payout list ────────────────────────────────────────────────
           financeState.when(
-            loading: () => const SizedBox.shrink(),
+            loading: () => const AppLoader(),
             error: (err, _) => Center(child: Text('Error: $err')),
             data: (payouts) {
               if (payouts.isEmpty) {

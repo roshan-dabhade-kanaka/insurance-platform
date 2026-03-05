@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
+import '../auth/role_access.dart';
+import '../navigation/app_router.dart';
 import '../widgets/widgets.dart';
 import '../providers/quote_provider.dart';
 import '../providers/admin_providers.dart';
 
-class QuoteCreationPage extends ConsumerWidget {
+import '../models/quote.dart';
+
+class QuoteCreationPage extends ConsumerStatefulWidget {
   const QuoteCreationPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuoteCreationPage> createState() => _QuoteCreationPageState();
+}
+
+class _QuoteCreationPageState extends ConsumerState<QuoteCreationPage> {
+  Quote? _lastCreatedQuote;
+
+  @override
+  Widget build(BuildContext context) {
     final quoteState = ref.watch(quoteProvider);
     final user = ref.watch(authNotifierProvider).user;
     final productsAsync = ref.watch(productsProvider);
@@ -19,103 +31,249 @@ class QuoteCreationPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Create New Quote',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 24),
           if (quoteState.isLoading)
-            const LinearProgressIndicator()
+            const AppLoader()
           else
             productsAsync.when(
-              data: (products) => DynamicFormWidget(
-                fields: [
-                  DynamicFormField(
-                    key: 'productVersionId',
-                    label: 'Select Product',
-                    type: DynamicFormFieldType.dropdown,
-                    options: products.map((p) => '${p.name} ($p.id)').toList(),
-                    required: true,
-                  ),
-                  const DynamicFormField(
-                    key: 'firstName',
-                    label: 'First Name',
-                    required: true,
-                  ),
-                  const DynamicFormField(
-                    key: 'lastName',
-                    label: 'Last Name',
-                    required: true,
-                  ),
-                  const DynamicFormField(
-                    key: 'email',
-                    label: 'Email',
-                    required: true,
-                  ),
-                  const DynamicFormField(
-                    key: 'coverageOptionId',
-                    label: 'Coverage Option ID (Mock)',
-                    required: true,
-                    initialValue: '00000000-0000-0000-0000-000000000001',
-                  ),
-                  const DynamicFormField(
-                    key: 'sumInsured',
-                    label: 'Sum Insured',
-                    type: DynamicFormFieldType.number,
-                    required: true,
-                  ),
-                ],
-                submitLabel: 'Generate Quote',
-                onSubmit: (values) async {
-                  try {
-                    // Extract ID from name (ID) format
-                    final productStr = values['productVersionId'] as String;
-                    final productId = productStr.contains('(')
-                        ? productStr.split('(').last.replaceAll(')', '').trim()
-                        : productStr;
-
-                    await ref.read(quoteProvider.notifier).createQuote({
-                      'productVersionId':
-                          productId, // Using product ID as version ID for mock simplicity
-                      'applicantData': {
-                        'firstName': values['firstName'],
-                        'lastName': values['lastName'],
-                        'email': values['email'],
-                      },
-                      'lineItems': [
-                        {
-                          'coverageOptionId': values['coverageOptionId'],
-                          'sumInsured':
-                              double.tryParse(values['sumInsured'] ?? '') ?? 0,
-                        },
+              data: (allProducts) {
+                final products = allProducts.where((p) => p.isActive).toList();
+                if (products.isEmpty) {
+                  final canAccessProductConfig =
+                      user != null &&
+                      canAccessRoute(AppRouter.productConfig, user);
+                  final hasInactiveOnly = allProducts.isNotEmpty;
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            hasInactiveOnly
+                                ? 'No active products'
+                                : 'No products yet',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            hasInactiveOnly
+                                ? 'Enable at least one product in Product Configuration, or create a new product.'
+                                : canAccessProductConfig
+                                ? 'Create at least one product from Product Configuration before creating a quote. The product dropdown will then list your products.'
+                                : 'No products are available yet. Ask an administrator to create a product in Product Configuration; then you can create a quote.',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                          if (canAccessProductConfig) ...[
+                            const SizedBox(height: 24),
+                            FilledButton.icon(
+                              onPressed: () =>
+                                  context.go(AppRouter.productConfig),
+                              icon: const Icon(Icons.add_box_outlined),
+                              label: const Text('Go to Product Configuration'),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const InfoBox(
+                      message:
+                          'Applicant details and the product/coverage determine the quote. Product ID is generated by the system when you create a product (e.g. PROD-1234567890); coverage options are set per product in Coverage Setup.',
+                    ),
+                    const SizedBox(height: 24),
+                    DynamicFormWidget(
+                      fields: [
+                        DynamicFormField(
+                          key: 'productVersionId',
+                          label: 'Select Product',
+                          type: DynamicFormFieldType.dropdown,
+                          options: products
+                              .map((p) => '${p.name} (${p.code})')
+                              .toList(),
+                          required: true,
+                          hint: 'Insurance product to quote (e.g. Life, Auto)',
+                        ),
+                        const DynamicFormField(
+                          key: 'firstName',
+                          label: 'Applicant first name',
+                          required: true,
+                          hint: 'Policyholder or applicant first name',
+                        ),
+                        const DynamicFormField(
+                          key: 'lastName',
+                          label: 'Applicant last name',
+                          required: true,
+                          hint: 'Policyholder or applicant last name',
+                        ),
+                        const DynamicFormField(
+                          key: 'email',
+                          label: 'Applicant email',
+                          required: true,
+                          hint: 'Email for the quote contact',
+                        ),
+                        const DynamicFormField(
+                          key: 'coverageOptionId',
+                          label: 'Coverage option ID',
+                          required: true,
+                          initialValue: '00000000-0000-0000-0000-000000000001',
+                          hint:
+                              'ID of the coverage under this product (from Coverage Setup). Replace when you have real coverages.',
+                        ),
+                        const DynamicFormField(
+                          key: 'sumInsured',
+                          label: 'Sum insured',
+                          type: DynamicFormFieldType.number,
+                          required: true,
+                          hint: 'Coverage amount in currency',
+                        ),
                       ],
-                      'createdBy': user?.id ?? 'unknown',
-                    });
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Quote created successfully!'),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Failed to create quote: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-              ),
-              loading: () => const Center(child: CircularProgressIndicator()),
+                      submitLabel: 'Generate Quote',
+                      onSubmit: (values) async {
+                        try {
+                          // Extract ID from name (ID) format
+                          final productStr =
+                              values['productVersionId'] as String;
+                          final product = products.firstWhere(
+                            (p) => '${p.name} (${p.code})' == productStr,
+                            orElse: () => products.first,
+                          );
+                          final idToUse = product.id;
+
+                          final newQuote = await ref
+                              .read(quoteProvider.notifier)
+                              .createQuote({
+                                'productVersionId': idToUse,
+                                'applicantData': {
+                                  'firstName': values['firstName'],
+                                  'lastName': values['lastName'],
+                                  'email': values['email'],
+                                },
+                                'lineItems': [
+                                  {
+                                    'coverageOptionId':
+                                        values['coverageOptionId'],
+                                    'sumInsured':
+                                        double.tryParse(
+                                          values['sumInsured'] ?? '',
+                                        ) ??
+                                        0,
+                                  },
+                                ],
+                                'createdBy': user?.id ?? 'unknown',
+                              });
+
+                          if (mounted) {
+                            setState(() => _lastCreatedQuote = newQuote);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Quote created successfully!'),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to create quote: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                );
+              },
+              loading: () => const AppLoader(),
               error: (e, _) =>
                   Center(child: Text('Error loading products: $e')),
             ),
+          if (_lastCreatedQuote != null) ...[
+            const SizedBox(height: 24),
+            Card(
+              color: Colors.green.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.green),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Quote Generated Successfully',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade900,
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _ResultRow(
+                      label: 'Quote Number',
+                      value: _lastCreatedQuote!.quoteNumber,
+                    ),
+                    _ResultRow(
+                      label: 'Status',
+                      value: _lastCreatedQuote!.status,
+                    ),
+                    _ResultRow(
+                      label: 'Applicant',
+                      value:
+                          (_lastCreatedQuote!.applicantSnapshot['email'] ?? '-')
+                              .toString(),
+                    ),
+                    const Divider(height: 32),
+                    FilledButton.icon(
+                      onPressed: () => context.go(AppRouter.quoteLifecycle),
+                      icon: const Icon(Icons.timeline),
+                      label: const Text('View in Lifecycle Track'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultRow extends StatelessWidget {
+  const _ResultRow({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          Text(value, style: const TextStyle(fontFamily: 'Courier')),
         ],
       ),
     );

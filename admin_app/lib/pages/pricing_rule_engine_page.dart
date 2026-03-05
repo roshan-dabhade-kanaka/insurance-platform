@@ -29,18 +29,9 @@ class _PricingRuleEnginePageState extends ConsumerState<PricingRuleEnginePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Pricing Rule Engine',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Configure dynamic factors for premium calculation.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+          const InfoBox(
+            message:
+                'Configure the dynamic pricing logic used by the calculation engine. Rules define how applicant data affects the final premium.',
           ),
           const SizedBox(height: 24),
           RuleBuilderWidget(
@@ -120,7 +111,7 @@ class _PricingRuleEnginePageState extends ConsumerState<PricingRuleEnginePage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const AppLoader(),
     );
 
     try {
@@ -138,7 +129,7 @@ class _PricingRuleEnginePageState extends ConsumerState<PricingRuleEnginePage> {
       };
 
       // Real API call
-      await client.post('/rules/pricing', data: payload);
+      await client.post('rules/pricing', data: payload);
 
       if (mounted) {
         Navigator.pop(context); // Close loading

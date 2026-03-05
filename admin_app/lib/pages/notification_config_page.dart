@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/widgets.dart';
 import '../core/api_client.dart';
-import '../providers/admin_providers.dart';
+import '../providers/notification_config_provider.dart';
 
 class NotificationConfigPage extends ConsumerStatefulWidget {
   const NotificationConfigPage({super.key});
@@ -17,25 +17,25 @@ class _NotificationConfigPageState
   List<NotificationChannelItem> _channels = [];
   bool _initialized = false;
 
-  void _syncChannels(Map<String, dynamic> config) {
+  void _syncChannels(NotificationConfigModel? config) {
     _channels = [
       NotificationChannelItem(
         id: 'email',
         name: 'Email Notifications',
         channelType: 'Email',
-        enabled: config['emailEnabled'] as bool? ?? true,
+        enabled: config?.emailEnabled ?? true,
       ),
       NotificationChannelItem(
         id: 'sms',
         name: 'SMS Notifications',
         channelType: 'SMS',
-        enabled: config['smsEnabled'] as bool? ?? false,
+        enabled: config?.smsEnabled ?? false,
       ),
       NotificationChannelItem(
         id: 'push',
         name: 'Push Notifications',
         channelType: 'Push',
-        enabled: config['pushEnabled'] as bool? ?? false,
+        enabled: config?.pushEnabled ?? false,
       ),
     ];
   }
@@ -97,7 +97,7 @@ class _NotificationConfigPageState
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const AppLoader(),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
@@ -106,7 +106,7 @@ class _NotificationConfigPageState
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const AppLoader(),
     );
 
     try {
@@ -118,7 +118,7 @@ class _NotificationConfigPageState
       };
 
       // Real API call
-      await client.post('/notifications/config', data: payload);
+      await client.post('notifications/config', data: payload);
 
       if (mounted) {
         Navigator.pop(context); // Close loading

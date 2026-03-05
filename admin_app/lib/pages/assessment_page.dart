@@ -44,6 +44,11 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
             onStepTap: (idx) => setState(() => _currentStep = idx),
           ),
           const SizedBox(height: 24),
+          const InfoBox(
+            message:
+                'The assessment workspace allows you to review evidence, add technical notes, and make final decisions on claim outcomes.',
+          ),
+          const SizedBox(height: 24),
           KeyedSubtree(
             key: ValueKey('assess_step_$_currentStep'),
             child: _buildStepContent(claimState),
@@ -68,20 +73,25 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
 
   Widget _buildSelectClaimStep(AsyncValue<List<Claim>> claimState) {
     return claimState.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const AppLoader(),
       error: (e, _) => Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('Failed to load claims: $e', style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Failed to load claims: $e',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
       ),
       data: (claims) {
         final assessable = claims
-            .where((c) =>
-                c.status != 'PAID' &&
-                c.status != 'REJECTED' &&
-                c.status != 'CLOSED' &&
-                c.status != 'WITHDRAWN')
+            .where(
+              (c) =>
+                  c.status != 'PAID' &&
+                  c.status != 'REJECTED' &&
+                  c.status != 'CLOSED' &&
+                  c.status != 'WITHDRAWN',
+            )
             .toList();
         if (assessable.isEmpty) {
           return Card(
@@ -99,17 +109,20 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeader('Select a claim', 'Choose the claim to assess.'),
             const SizedBox(height: 16),
             ...assessable.map((claim) {
               final selected = _selectedClaim?.id == claim.id;
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
-                color: selected ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
+                color: selected
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                    : null,
                 child: ListTile(
                   title: Text(claim.claimNumber),
                   subtitle: Text(
-                    '${claim.status} · Claimed: \$${claim.claimedAmount.toStringAsFixed(2)}',
+                    '${claim.status} · Claimed: ₹${claim.claimedAmount.toStringAsFixed(2)}',
                   ),
                   trailing: selected ? const Icon(Icons.check_circle) : null,
                   onTap: () => setState(() {
@@ -151,7 +164,6 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildHeader('Assessment Review', 'Evaluate evidence and add notes.'),
         const SizedBox(height: 16),
         Card(
           child: Padding(
@@ -159,9 +171,14 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Claim: ${claim.claimNumber}', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Claim: ${claim.claimNumber}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
-                Text('Claimed amount: \$${claim.claimedAmount.toStringAsFixed(2)}'),
+                Text(
+                  'Claimed amount: ₹${claim.claimedAmount.toStringAsFixed(2)}',
+                ),
                 Text('Loss: ${claim.lossDescription}'),
               ],
             ),
@@ -193,7 +210,10 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
             });
           },
         ),
-        TextButton(onPressed: () => setState(() => _currentStep = 0), child: const Text('Back')),
+        TextButton(
+          onPressed: () => setState(() => _currentStep = 0),
+          child: const Text('Back'),
+        ),
       ],
     );
   }
@@ -209,7 +229,6 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildHeader('Decision & Outcome', 'Set amounts and final outcome.'),
         const SizedBox(height: 24),
         DynamicFormWidget(
           fields: [
@@ -217,7 +236,9 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
               key: 'assessedAmount',
               label: 'Assessed Amount',
               hint: 'Amount approved for coverage',
-              initialValue: _formData['assessedAmount']?.toString() ?? claim.claimedAmount.toString(),
+              initialValue:
+                  _formData['assessedAmount']?.toString() ??
+                  claim.claimedAmount.toString(),
             ),
             DynamicFormField(
               key: 'deductibleApplied',
@@ -229,7 +250,9 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
               key: 'netPayout',
               label: 'Net Payout',
               hint: 'Assessed minus deductible',
-              initialValue: _formData['netPayout']?.toString() ?? claim.claimedAmount.toString(),
+              initialValue:
+                  _formData['netPayout']?.toString() ??
+                  claim.claimedAmount.toString(),
             ),
             DynamicFormField(
               key: 'reason',
@@ -245,19 +268,33 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
               _submitting = true;
             });
             try {
-              final assessedAmount = double.tryParse(values['assessedAmount']?.toString() ?? '') ?? claim.claimedAmount;
-              final deductibleApplied = double.tryParse(values['deductibleApplied']?.toString() ?? '') ?? 0;
-              final netPayout = double.tryParse(values['netPayout']?.toString() ?? '') ?? (assessedAmount - deductibleApplied);
-              await ref.read(claimProvider.notifier).submitAssessment(claim.id, {
-                'assessedAmount': assessedAmount,
-                'deductibleApplied': deductibleApplied,
-                'netPayout': netPayout,
-                'assessmentNotes': _formData['notes']?.toString() ?? values['reason']?.toString(),
-                'lineItemAssessment': <Map<String, dynamic>>[],
-              });
+              final assessedAmount =
+                  double.tryParse(values['assessedAmount']?.toString() ?? '') ??
+                  claim.claimedAmount;
+              final deductibleApplied =
+                  double.tryParse(
+                    values['deductibleApplied']?.toString() ?? '',
+                  ) ??
+                  0;
+              final netPayout =
+                  double.tryParse(values['netPayout']?.toString() ?? '') ??
+                  (assessedAmount - deductibleApplied);
+              await ref
+                  .read(claimProvider.notifier)
+                  .submitAssessment(claim.id, {
+                    'assessedAmount': assessedAmount,
+                    'deductibleApplied': deductibleApplied,
+                    'netPayout': netPayout,
+                    'assessmentNotes':
+                        _formData['notes']?.toString() ??
+                        values['reason']?.toString(),
+                    'lineItemAssessment': <Map<String, dynamic>>[],
+                  });
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Assessment submitted successfully')),
+                  const SnackBar(
+                    content: Text('Assessment submitted successfully'),
+                  ),
                 );
                 setState(() {
                   _selectedClaim = null;
@@ -267,34 +304,18 @@ class _AssessmentPageState extends ConsumerState<AssessmentPage> {
               }
             } catch (e) {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to submit: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Failed to submit: $e')));
               }
             } finally {
               if (mounted) setState(() => _submitting = false);
             }
           },
         ),
-        TextButton(onPressed: () => setState(() => _currentStep = 1), child: const Text('Back')),
-      ],
-    );
-  }
-
-  Widget _buildHeader(String title, String subtitle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+        TextButton(
+          onPressed: () => setState(() => _currentStep = 1),
+          child: const Text('Back'),
         ),
       ],
     );

@@ -30,12 +30,12 @@ class DashboardStats {
 
   String get premiumsFormatted {
     if (totalPremiums >= 1e6) {
-      return '\$${(totalPremiums / 1e6).toStringAsFixed(1)}M';
+      return '₹${(totalPremiums / 1e6).toStringAsFixed(1)}M';
     }
     if (totalPremiums >= 1e3) {
-      return '\$${(totalPremiums / 1e3).toStringAsFixed(1)}K';
+      return '₹${(totalPremiums / 1e3).toStringAsFixed(1)}K';
     }
-    return '\$${totalPremiums.toStringAsFixed(0)}';
+    return '₹${totalPremiums.toStringAsFixed(0)}';
   }
 }
 
@@ -87,11 +87,8 @@ final dashboardStatsProvider = FutureProvider<DashboardStats?>((ref) async {
     }
 
     final client = ref.watch(apiClientProvider);
-    final path = useCustomerScope ? '/dashboard/stats/me' : '/dashboard/stats';
-    final res = await client.get(
-      path,
-      queryParameters: {'tenantId': tenantId},
-    );
+    final path = useCustomerScope ? 'dashboard/stats/me' : 'dashboard/stats';
+    final res = await client.get(path, queryParameters: {'tenantId': tenantId});
     if (res.statusCode == 200 && res.data != null) {
       return DashboardStats.fromJson(res.data as Map<String, dynamic>);
     }
@@ -114,7 +111,7 @@ final premiumTrendsProvider = FutureProvider<List<PremiumTrendPoint>>((
     }
     final client = ref.watch(apiClientProvider);
     final res = await client.get(
-      '/dashboard/premium-trends',
+      'dashboard/premium-trends',
       queryParameters: {'tenantId': tenantId},
     );
     if (res.statusCode == 200 && res.data is List) {

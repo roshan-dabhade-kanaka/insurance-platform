@@ -10,7 +10,7 @@ class FraudNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
   Future<void> fetchPendingReviews() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/fraud');
+      final response = await _apiClient.get('fraud');
       final List<dynamic> data = response.data;
       final claims = data.map((json) => Claim.fromJson(json)).toList();
       state = AsyncValue.data(claims);
@@ -24,7 +24,7 @@ class FraudNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
     Map<String, dynamic> reviewData,
   ) async {
     try {
-      await _apiClient.post('/fraud/$claimId/review', data: reviewData);
+      await _apiClient.post('fraud/$claimId/review', data: reviewData);
       await fetchPendingReviews();
     } catch (e) {
       rethrow;

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 
 /// Login page: email/password only. Backend returns JWT; roles from token drive tab access.
 class LoginPage extends ConsumerStatefulWidget {
@@ -16,8 +17,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController(text: 'admin@insurance.com');
   final _passwordController = TextEditingController(text: 'Admin@123');
   bool _loading = false;
-  String? _error;
+  String? _error = null;
   bool _obscurePassword = true;
+
+  final List<({String label, String email, String password})> _testUsers = [
+    (label: 'Admin', email: 'admin@insurance.com', password: 'Admin@123'),
+    (label: 'Agent', email: 'agent@insurance.com', password: 'Agent@123'),
+    (label: 'Underwriter', email: 'uw@insurance.com', password: 'UW@123'),
+    (
+      label: 'Senior UW',
+      email: 'senioruw@insurance.com',
+      password: 'SeniorUW@123',
+    ),
+    (
+      label: 'Claims Officer',
+      email: 'claims@insurance.com',
+      password: 'Claims@123',
+    ),
+    (
+      label: 'Finance Officer',
+      email: 'finance@insurance.com',
+      password: 'Finance@123',
+    ),
+    (
+      label: 'Customer',
+      email: 'customer@insurance.com',
+      password: 'Customer@123',
+    ),
+  ];
 
   @override
   void dispose() {
@@ -100,6 +127,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
+                    DropdownMenu<int>(
+                      initialSelection: 0,
+                      expandedInsets: EdgeInsets.zero,
+                      label: const Text('Quick Login (Testing)'),
+                      dropdownMenuEntries: [
+                        for (int i = 0; i < _testUsers.length; i++)
+                          DropdownMenuEntry(
+                            value: i,
+                            label: _testUsers[i].label,
+                          ),
+                      ],
+                      onSelected: (i) {
+                        if (i != null) {
+                          setState(() {
+                            _emailController.text = _testUsers[i].email;
+                            _passwordController.text = _testUsers[i].password;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -122,7 +170,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                       obscureText: _obscurePassword,
@@ -142,11 +191,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     FilledButton(
                       onPressed: _loading ? null : _submit,
                       child: _loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
+                          ? const AppLoader(size: 20, center: false)
                           : const Text('Sign in'),
                     ),
                   ],

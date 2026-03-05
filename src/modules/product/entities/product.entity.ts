@@ -83,6 +83,10 @@ export class ProductVersion extends BaseTenantEntity {
     @Column({ name: 'product_snapshot', type: 'jsonb', default: {} })
     productSnapshot!: Record<string, unknown>;
 
+    /** Dynamic fields required to generate a quote for this product version */
+    @Column({ name: 'quote_fields', type: 'jsonb', default: [] })
+    quoteFields!: Array<Record<string, any>>;
+
     @OneToMany(() => CoverageOption, (c) => c.productVersion)
     coverageOptions!: CoverageOption[];
 

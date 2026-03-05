@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/api_client.dart';
+import '../models/quote.dart';
+import '../auth/auth_provider.dart';
+import '../core/constants.dart';
 
 // ---------------------------------------------------------------------------
 // Models
@@ -91,6 +94,91 @@ class ProcessedTodayStats {
   }
 }
 
+class CoverageOption {
+  final String id;
+  final String name;
+  final String code;
+  final bool isMandatory;
+  final double? minSumInsured;
+  final double? maxSumInsured;
+
+  const CoverageOption({
+    required this.id,
+    required this.name,
+    required this.code,
+    required this.isMandatory,
+    this.minSumInsured,
+    this.maxSumInsured,
+  });
+
+  factory CoverageOption.fromJson(Map<String, dynamic> json) {
+    return CoverageOption(
+      id: (json['id'] ?? '').toString(),
+      name: (json['name'] ?? 'Unknown Coverage').toString(),
+      code: (json['code'] ?? '').toString(),
+      isMandatory: json['isMandatory'] is bool
+          ? json['isMandatory'] as bool
+          : (json['is_mandatory'] as bool? ?? false),
+      minSumInsured: (json['minSumInsured'] ?? json['min_sum_insured']) != null
+          ? double.tryParse(
+              (json['minSumInsured'] ?? json['min_sum_insured']).toString(),
+            )
+          : null,
+      maxSumInsured: (json['maxSumInsured'] ?? json['max_sum_insured']) != null
+          ? double.tryParse(
+              (json['maxSumInsured'] ?? json['max_sum_insured']).toString(),
+            )
+          : null,
+    );
+  }
+}
+
+class ProductVersion {
+  final String id;
+  final int versionNumber;
+  final String status;
+  final String effectiveFrom;
+  final String? effectiveTo;
+  final List<CoverageOption> coverageOptions;
+
+  const ProductVersion({
+    required this.id,
+    required this.versionNumber,
+    required this.status,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    required this.coverageOptions,
+  });
+
+  factory ProductVersion.fromJson(Map<String, dynamic> json) {
+    final rawCoverages = json['coverageOptions'] ?? json['coverage_options'];
+    final coverages = (rawCoverages is List)
+        ? rawCoverages
+              .cast<Map<String, dynamic>>()
+              .map(CoverageOption.fromJson)
+              .toList()
+        : <CoverageOption>[];
+
+    return ProductVersion(
+      id: (json['id'] ?? '').toString(),
+      versionNumber:
+          (json['versionNumber'] ?? json['version_number'] ?? 1) is num
+          ? (json['versionNumber'] ?? json['version_number'] ?? 1).toInt()
+          : int.tryParse(
+                  (json['versionNumber'] ?? json['version_number'] ?? 1)
+                      .toString(),
+                ) ??
+                1,
+      status: (json['status'] ?? 'DRAFT').toString(),
+      effectiveFrom: (json['effectiveFrom'] ?? json['effective_from'] ?? '')
+          .toString(),
+      effectiveTo:
+          json['effectiveTo']?.toString() ?? json['effective_to']?.toString(),
+      coverageOptions: coverages,
+    );
+  }
+}
+
 class Product {
   final String id;
   final String name;
@@ -98,6 +186,7 @@ class Product {
   final String type;
   final String? description;
   final bool isActive;
+  final List<ProductVersion> versions;
 
   const Product({
     required this.id,
@@ -106,16 +195,59 @@ class Product {
     required this.type,
     this.description,
     required this.isActive,
+    required this.versions,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    final rawVersions = json['versions'];
+    final versions = (rawVersions is List)
+        ? rawVersions
+              .cast<Map<String, dynamic>>()
+              .map(ProductVersion.fromJson)
+              .toList()
+        : <ProductVersion>[];
+
     return Product(
       id: (json['id'] ?? '').toString(),
       name: (json['name'] ?? 'Unknown Product').toString(),
       code: (json['code'] ?? '').toString(),
       type: (json['type'] ?? 'GENERAL').toString(),
       description: json['description']?.toString(),
-      isActive: json['isActive'] as bool? ?? true,
+      isActive: json['isActive'] as bool? ?? json['active'] as bool? ?? true,
+      versions: versions,
+    );
+  }
+}
+
+class RiskProfile {
+  final String id;
+  final String applicantRef;
+  final String riskBand;
+  final String loadingPercentage;
+  final Map<String, dynamic> profileData;
+
+  const RiskProfile({
+    required this.id,
+    required this.applicantRef,
+    required this.riskBand,
+    required this.loadingPercentage,
+    required this.profileData,
+  });
+
+  factory RiskProfile.fromJson(Map<String, dynamic> json) {
+    return RiskProfile(
+      id: (json['id'] ?? '').toString(),
+      applicantRef: (json['applicantRef'] ?? json['applicant_ref'] ?? 'Unknown')
+          .toString(),
+      riskBand: (json['riskBand'] ?? json['risk_band'] ?? 'STANDARD')
+          .toString(),
+      loadingPercentage:
+          (json['loadingPercentage'] ?? json['loading_percentage'] ?? '0.00')
+              .toString(),
+      profileData:
+          json['profileData'] as Map<String, dynamic>? ??
+          json['profile_data'] as Map<String, dynamic>? ??
+          {},
     );
   }
 }
@@ -135,49 +267,22 @@ class InsuranceRule {
 
   factory InsuranceRule.fromJson(Map<String, dynamic> json, String type) {
     return InsuranceRule(
-      id: (json['id'] ?? '').toString(),
+      id: (json['ruleId'] ?? json['id'] ?? '').toString(),
       name: (json['name'] ?? 'Unnamed Rule').toString(),
       type: type,
       logic:
+          json['ruleDefinition'] as Map<String, dynamic>? ??
+          json['rule_definition'] as Map<String, dynamic>? ??
+          json['ruleLogic'] as Map<String, dynamic>? ??
           json['rule_logic'] as Map<String, dynamic>? ??
+          json['ruleExpression'] as Map<String, dynamic>? ??
           json['rule_expression'] as Map<String, dynamic>? ??
           {},
     );
   }
 }
 
-class Quote {
-  final String id;
-  final String quoteNumber;
-  final String productVersionId;
-  final String status;
-  final String applicantRef;
-  final String tenantId;
-
-  const Quote({
-    required this.id,
-    required this.quoteNumber,
-    required this.productVersionId,
-    required this.status,
-    required this.applicantRef,
-    required this.tenantId,
-  });
-
-  factory Quote.fromJson(Map<String, dynamic> json) {
-    return Quote(
-      id: (json['id'] ?? '').toString(),
-      quoteNumber: (json['quoteNumber'] ?? json['quote_number'] ?? '')
-          .toString(),
-      productVersionId:
-          (json['productVersionId'] ?? json['product_version_id'] ?? '')
-              .toString(),
-      status: (json['status'] ?? 'DRAFT').toString(),
-      applicantRef: (json['applicantRef'] ?? json['applicant_ref'] ?? '')
-          .toString(),
-      tenantId: (json['tenantId'] ?? json['tenant_id'] ?? '').toString(),
-    );
-  }
-}
+// Quote model is now imported from ../models/quote.dart
 
 // ---------------------------------------------------------------------------
 // Providers
@@ -187,7 +292,7 @@ class Quote {
 final usersProvider = FutureProvider<List<AdminUser>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
-    final res = await client.get('/users');
+    final res = await client.get('users');
     if (res.statusCode == 200 && res.data is List) {
       return (res.data as List)
           .cast<Map<String, dynamic>>()
@@ -205,7 +310,7 @@ final usersProvider = FutureProvider<List<AdminUser>>((ref) async {
 final tenantsProvider = FutureProvider<List<Tenant>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
-    final res = await client.get('/tenants');
+    final res = await client.get('tenants');
     if (res.statusCode == 200 && res.data is List) {
       return (res.data as List)
           .cast<Map<String, dynamic>>()
@@ -226,7 +331,7 @@ final processedTodayProvider = FutureProvider<ProcessedTodayStats?>((
 ) async {
   try {
     final client = ref.watch(apiClientProvider);
-    final res = await client.get('/payouts/processed-today');
+    final res = await client.get('payouts/processed-today');
     if (res.statusCode == 200 && res.data is Map<String, dynamic>) {
       return ProcessedTodayStats.fromJson(res.data as Map<String, dynamic>);
     }
@@ -241,7 +346,7 @@ final processedTodayProvider = FutureProvider<ProcessedTodayStats?>((
 final productsProvider = FutureProvider<List<Product>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
-    final res = await client.get('/products');
+    final res = await client.get('products');
     if (res.statusCode == 200 && res.data is List) {
       return (res.data as List)
           .cast<Map<String, dynamic>>()
@@ -255,43 +360,45 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
   }
 });
 
-/// Fetches all rules from GET /rules.
-final rulesProvider = FutureProvider<Map<String, List<InsuranceRule>>>((
-  ref,
-) async {
-  try {
-    final client = ref.watch(apiClientProvider);
-    // Note: This expects a specific tenantId and productVersionId which we might need to parameterize later.
-    // For now, using query params if available or defaults.
-    final res = await client.get(
-      '/rules',
-      queryParameters: {
-        'tenantId': '00000000-0000-0000-0000-000000000001',
-        'productVersionId': '00000000-0000-0000-0000-000000000001',
-      },
-    );
-    if (res.statusCode == 200 && res.data is Map) {
-      final data = res.data as Map<String, dynamic>;
-      final eligibility =
-          (data['eligibility'] as List?)
-              ?.cast<Map<String, dynamic>>()
-              .map((j) => InsuranceRule.fromJson(j, 'eligibility'))
-              .toList() ??
-          [];
-      final pricing =
-          (data['pricing'] as List?)
-              ?.cast<Map<String, dynamic>>()
-              .map((j) => InsuranceRule.fromJson(j, 'pricing'))
-              .toList() ??
-          [];
-      return {'eligibility': eligibility, 'pricing': pricing};
-    }
-    return {'eligibility': [], 'pricing': []};
-  } catch (e) {
-    debugPrint('Rules fetch error: $e');
-    return {'eligibility': [], 'pricing': []};
-  }
-});
+/// Fetches rules for a specific product version.
+final rulesProvider =
+    FutureProvider.family<Map<String, List<InsuranceRule>>, String>((
+      ref,
+      productVersionId,
+    ) async {
+      try {
+        final client = ref.watch(apiClientProvider);
+        final auth = ref.watch(authNotifierProvider);
+        final tenantId = auth.user?.tenantId ?? ApiConstants.defaultTenantId;
+        final res = await client.get(
+          'rules',
+          queryParameters: {
+            'productVersionId': productVersionId,
+            'tenantId': tenantId,
+          },
+        );
+        if (res.statusCode == 200 && res.data is Map) {
+          final data = res.data as Map<String, dynamic>;
+          final eligibility =
+              (data['eligibility'] as List?)
+                  ?.cast<Map<String, dynamic>>()
+                  .map((j) => InsuranceRule.fromJson(j, 'eligibility'))
+                  .toList() ??
+              [];
+          final pricing =
+              (data['pricing'] as List?)
+                  ?.cast<Map<String, dynamic>>()
+                  .map((j) => InsuranceRule.fromJson(j, 'pricing'))
+                  .toList() ??
+              [];
+          return {'eligibility': eligibility, 'pricing': pricing};
+        }
+        return {'eligibility': [], 'pricing': []};
+      } catch (e) {
+        debugPrint('Rules fetch error: $e');
+        return {'eligibility': [], 'pricing': []};
+      }
+    });
 
 /// Fetches all quotes from GET /quotes.
 final quotesProvider = FutureProvider<List<Quote>>((ref) async {
@@ -299,7 +406,7 @@ final quotesProvider = FutureProvider<List<Quote>>((ref) async {
     final client = ref.watch(apiClientProvider);
     // Note: We'll eventually need to pass the tenant ID via headers as implemented in the controller.
     // The ApiClient should handle this if it has the current tenant in its state/interceptors.
-    final res = await client.get('/quotes');
+    final res = await client.get('quotes');
     if (res.statusCode == 200 && res.data is List) {
       return (res.data as List)
           .cast<Map<String, dynamic>>()
@@ -339,7 +446,7 @@ class SlaStats {
 final slaProvider = FutureProvider<List<SlaStats>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
-    final res = await client.get('/sla/stats');
+    final res = await client.get('sla/stats');
     if (res.statusCode == 200 && res.data is List) {
       return (res.data as List)
           .cast<Map<String, dynamic>>()
@@ -349,6 +456,24 @@ final slaProvider = FutureProvider<List<SlaStats>>((ref) async {
     return [];
   } catch (e) {
     debugPrint('SLA fetch error: $e');
+    return [];
+  }
+});
+
+/// Fetches all risk profiles from GET /risk.
+final riskProfilesProvider = FutureProvider<List<RiskProfile>>((ref) async {
+  try {
+    final client = ref.watch(apiClientProvider);
+    final res = await client.get('risk');
+    if (res.statusCode == 200 && res.data is List) {
+      return (res.data as List)
+          .cast<Map<String, dynamic>>()
+          .map(RiskProfile.fromJson)
+          .toList();
+    }
+    return [];
+  } catch (e) {
+    debugPrint('Risk profiles fetch error: $e');
     return [];
   }
 });

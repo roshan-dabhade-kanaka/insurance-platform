@@ -1,0 +1,15 @@
+---
+description: Where to create project documentation (Markdown) files
+globs: ["**/*.md"]
+---
+
+# Documentation file location
+
+- **All project-level documentation** (architecture, domain, workflows, guides, setup, skills, specs, ADRs, runbooks) must be created in the **`docs/`** folder at the repository root.
+- Do **not** create new `.md` files at the repository root (except `README.md`).
+- App-specific docs (e.g. `admin_app/README.md`, `admin_app/TABS_AND_ROLES.md`) stay in their app folder.
+- When creating a new documentation file (e.g. architecture, guide, setup, workflow, skill, or any project-wide spec), create it as **`docs/<name>.md`** (e.g. `docs/API_CONTRACTS.md`, `docs/DEPLOYMENT.md`).
+
+Existing docs in `docs/`:
+- ARCHITECTURE.md, DOMAIN.md, WORKFLOWS.md, SKILLS.md
+- INSURANCE_APP_GUIDE.md, LOCAL_SETUP.md

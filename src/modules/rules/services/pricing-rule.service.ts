@@ -31,11 +31,13 @@ import {
 import { RateTableEntry } from '../entities/rules.entity';
 import { Quote, PremiumSnapshot } from '../../quote/entities/quote.entity';
 import { ProductVersion } from '../../product/entities/product.entity';
+import { RiskProfile } from '../../risk/entities/risk-profile.entity';
 
 /** Input line item shape for premium calculation (sumInsured may be number from API) */
 export interface QuoteLineItemInput {
     sumInsured: number | string;
     coverageOptionId: string;
+    riderId?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -88,6 +90,9 @@ export class PricingRuleService {
 
         @InjectRepository(ProductVersion)
         private readonly productVersionRepo: Repository<ProductVersion>,
+
+        @InjectRepository(RiskProfile)
+        private readonly riskProfileRepo: Repository<RiskProfile>,
     ) { }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -102,6 +107,28 @@ export class PricingRuleService {
 
         if (!quote) throw new NotFoundException(`Quote not found: ${input.quoteId}`);
         if (!productVersion) throw new NotFoundException(`Product version not found: ${input.productVersionId}`);
+
+        // Fetch actual Risk Profile if available to use the REAL loading percentage
+        // (the UI might send a dummy ID or a general tid as the fallback)
+        let actualLoading = Number(input.loadingPercentage) || 0;
+        let foundRiskProfile: RiskProfile | null = null;
+
+        if (input.riskProfileId && input.riskProfileId !== input.tenantId) {
+            foundRiskProfile = await this.riskProfileRepo.findOne({ where: { id: input.riskProfileId } });
+        } else {
+            // Fallback: search for a risk profile linked to this quote
+            foundRiskProfile = await this.riskProfileRepo.findOne({
+                where: { quoteId: input.quoteId },
+                order: { createdAt: 'DESC' }
+            });
+        }
+
+        if (foundRiskProfile) {
+            actualLoading = Number(foundRiskProfile.loadingPercentage);
+            this.logger.log(`Using calculated Risk Loading: ${actualLoading}% from Profile ${foundRiskProfile.id}`);
+        } else {
+            this.logger.warn(`No Risk Profile found for Quote ${input.quoteId}. Using input loading: ${actualLoading}%`);
+        }
 
         const pricingRules = await this.ruleLoader.loadPricingRules(
             input.tenantId,
@@ -120,11 +147,18 @@ export class PricingRuleService {
 
         // Evaluate pricing for each line item independently
         for (const lineItem of input.lineItems) {
+            const sumInsuredNum = typeof lineItem.sumInsured === 'string'
+                ? Number(lineItem.sumInsured)
+                : lineItem.sumInsured;
+
             const facts: PricingFacts = {
-                sumInsured: typeof lineItem.sumInsured === 'string' ? Number(lineItem.sumInsured) : lineItem.sumInsured,
-                coverageCode: lineItem.coverageOptionId,
+                // Spread applicantData first so that explicit fields below override it
                 ...input.applicantData,
-                loadingPercentage: input.loadingPercentage,
+                // These MUST come after the spread to prevent applicantData from
+                // overwriting sumInsured with a string (e.g. "999999" from quoteSnapshot)
+                sumInsured: sumInsuredNum,
+                coverageCode: lineItem.coverageOptionId,
+                loadingPercentage: actualLoading,
             } as PricingFacts;
 
             // Find the applicable pricing rule for this coverage
@@ -143,15 +177,30 @@ export class PricingRuleService {
 
             lineItemBreakdowns.push(breakdown);
 
-            totalBasePremium += breakdown.basePremium;
+            if (lineItem.riderId) {
+                totalRiderSurcharge += breakdown.basePremium;
+            } else {
+                totalBasePremium += breakdown.basePremium;
+            }
+
             totalDiscountAmount += breakdown.appliedFactors
                 .filter((f) => f.direction === 'DECREASE')
                 .reduce((sum, f) => sum + f.adjustmentValue, 0);
             totalTaxAmount += breakdown.taxAmount;
         }
 
+        // Guard: no rule matched any line item — surface a clear error
+        if (lineItemBreakdowns.length === 0) {
+            const coverageIds = input.lineItems.map((li) => li.coverageOptionId).join(', ');
+            throw new BadRequestException(
+                `No pricing rule matched any of the coverage option IDs: [${coverageIds}]. ` +
+                `Please ensure a Pricing Rule is configured for this product version, ` +
+                `or that the coverageOptionId sent is the UUID (not the code string like "DEATH_COV").`,
+            );
+        }
+
         // Apply risk loading (from RiskScoreService) as a top-level surcharge
-        const riskLoading = (totalBasePremium * input.loadingPercentage) / 100;
+        const riskLoading = (totalBasePremium * actualLoading) / 100;
         const subtotal = totalBasePremium + riskLoading - totalDiscountAmount;
         const taxOnRiskLoading = riskLoading * this.TAX_RATE;
         const grandTotal = subtotal + totalTaxAmount + taxOnRiskLoading;
@@ -179,9 +228,18 @@ export class PricingRuleService {
 
         const saved = await this.snapshotRepo.save(snapshot);
 
-        this.logger.log(
-            `Premium calculated: base=${totalBasePremium} loading=${riskLoading} total=${grandTotal} [quoteId=${input.quoteId}]`,
-        );
+        this.logger.log(`
+╔═════════════════════════════════════════════════════╗
+║  QUOTE PREMIUM FINAL — quoteId: ${input.quoteId.substring(0, 8)}…
+╠═══════════════════════════════╦═════════════════════╣
+║  Base Premium                 ║ ₹${String(totalBasePremium.toFixed(2)).padStart(19)} ║
+║  Rider Surcharge              ║ ₹${String(totalRiderSurcharge.toFixed(2)).padStart(19)} ║
+║  Risk Loading (${actualLoading}%)           ║ ₹${String(riskLoading.toFixed(2)).padStart(19)} ║
+║  Discount                     ║ ₹${String(totalDiscountAmount.toFixed(2)).padStart(19)} ║
+║  Tax                          ║ ₹${String((totalTaxAmount + taxOnRiskLoading).toFixed(2)).padStart(19)} ║
+╠═══════════════════════════════╬═════════════════════╣
+║  GRAND TOTAL                  ║ ₹${String(grandTotal.toFixed(2)).padStart(19)} ║
+╚═══════════════════════════════╩═════════════════════╝`);
 
         const savedOne = Array.isArray(saved) ? saved[0] : saved;
         return {
@@ -220,36 +278,51 @@ export class PricingRuleService {
         facts: PricingFacts,
         tenantId: string,
     ): Promise<PremiumBreakdown> {
-        let running = expression.baseRate;
+        const baseRate = expression.baseRate || 0;
+        this.logger.debug(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 PREMIUM COMPUTATION START
+   Base Rate   : ₹${baseRate.toFixed(2)}
+   Sum Insured : ₹${Number(facts.sumInsured).toFixed(2)}
+   Coverage    : ${facts.coverageCode ?? 'N/A'}
+   Loading %   : ${facts.loadingPercentage ?? 0}%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        let running = baseRate;
         const appliedFactors: AppliedFactor[] = [];
 
-        for (const factor of expression.factors) {
-            if (!this.isFactorApplicable(factor, facts)) continue;
+        // Ensure factors is an array to prevents crash if rule is malformed in DB
+        const factors = Array.isArray(expression.factors) ? expression.factors : [];
+
+        for (const factor of factors) {
+            if (!this.isFactorApplicable(factor, facts)) {
+                this.logger.debug(`Factor '${factor.name}' not applicable`);
+                continue;
+            }
 
             const before = running;
             let adjustment = 0;
 
             switch (factor.type) {
                 case 'PERCENTAGE': {
-                    // Example: smoker=true → increase by 20%
-                    // Rule: { type: "PERCENTAGE", fact: "smoker", operator: "equal", value: true, adjustment: 20, direction: "INCREASE" }
-                    adjustment = (running * (factor.adjustment ?? 0)) / 100;
-                    running = factor.direction === 'INCREASE' ? running + adjustment : running - adjustment;
+                    const adjValue = factor.adjustment ?? 0;
+                    adjustment = (before * adjValue) / 100;
+                    running = factor.direction === 'INCREASE' ? before + adjustment : before - adjustment;
+                    this.logger.debug(`Applied factor '${factor.name}' (PERCENTAGE): ${factor.direction === 'INCREASE' ? '+' : '-'}${adjValue}% -> impact: ₹${adjustment.toFixed(2)} [running: ₹${running.toFixed(2)}]`);
                     break;
                 }
 
                 case 'FLAT': {
-                    // Example: disability rider → flat +200
                     adjustment = factor.adjustment ?? 0;
-                    running = factor.direction === 'INCREASE' ? running + adjustment : running - adjustment;
+                    running = factor.direction === 'INCREASE' ? before + adjustment : before - adjustment;
+                    this.logger.debug(`Applied factor '${factor.name}' (FLAT): ${factor.direction === 'INCREASE' ? '+' : '-'}${adjustment} -> impact: ₹${adjustment.toFixed(2)} [running: ₹${running.toFixed(2)}]`);
                     break;
                 }
 
                 case 'MULTIPLIER': {
-                    // Example: risk band HIGH → multiply by 1.5
                     const multiplier = factor.adjustment ?? 1;
-                    adjustment = running * (multiplier - 1);
-                    running = running * multiplier;
+                    adjustment = before * (multiplier - 1);
+                    running = before * multiplier;
+                    this.logger.debug(`Applied factor '${factor.name}' (MULTIPLIER): ×${multiplier} -> impact: ₹${adjustment.toFixed(2)} [running: ₹${running.toFixed(2)}]`);
                     break;
                 }
 
@@ -290,6 +363,18 @@ export class PricingRuleService {
 
         const taxAmount = running * this.TAX_RATE;
         const totalPremium = running + taxAmount;
+
+        // ── Summary log for this line item
+        this.logger.debug(`
+┌─────────────────────────────────────────────────────┐
+│  PREMIUM BREAKDOWN SUMMARY                          │
+├───────────────────────────┬─────────────────────────┤
+│  Base Rate                │ ₹${(expression.baseRate || 0).toFixed(2).padStart(21)} │
+│  Factors Applied          │ ${String(appliedFactors.length).padStart(21)} │
+│  Subtotal (before tax)    │ ₹${running.toFixed(2).padStart(21)} │
+│  Tax (${(this.TAX_RATE * 100).toFixed(0)}%)              │ ₹${taxAmount.toFixed(2).padStart(21)} │
+│  TOTAL PREMIUM            │ ₹${totalPremium.toFixed(2).padStart(21)} │
+└───────────────────────────┴─────────────────────────┘`);
 
         return {
             basePremium: expression.baseRate,

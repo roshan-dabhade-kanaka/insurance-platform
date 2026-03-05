@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/dashboard_api.dart';
-import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 
 String _formatInt(int n) {
   final s = n.toString();
@@ -29,21 +29,6 @@ class DashboardPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            isCustomer ? 'Your Overview' : 'Executive Summary',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            isCustomer
-                ? 'Your policies and claims at a glance'
-                : 'System overview',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
           if (statsAsync.hasValue &&
               statsAsync.value == null &&
               !statsAsync.isLoading)
@@ -57,14 +42,7 @@ class DashboardPage extends ConsumerWidget {
               ),
             ),
           if (statsAsync.isLoading)
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
+            const Padding(padding: EdgeInsets.only(top: 8), child: AppLoader()),
           const SizedBox(height: 24),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -88,6 +66,7 @@ class DashboardPage extends ConsumerWidget {
                         : '—',
                     trend: stats != null ? 'Live' : '—',
                     trendUp: true,
+                    color: Colors.blue.shade600,
                   ),
                   _MetricCard(
                     icon: Icons.payments_outlined,
@@ -95,6 +74,7 @@ class DashboardPage extends ConsumerWidget {
                     value: stats != null ? stats.premiumsFormatted : '—',
                     trend: stats != null ? 'Live' : '—',
                     trendUp: true,
+                    color: Colors.teal.shade600,
                   ),
                   _MetricCard(
                     icon: Icons.assignment_late_outlined,
@@ -104,6 +84,7 @@ class DashboardPage extends ConsumerWidget {
                         : '—',
                     trend: stats != null ? 'Live' : '—',
                     trendUp: true,
+                    color: Colors.orange.shade600,
                   ),
                   _MetricCard(
                     icon: Icons.hourglass_empty_outlined,
@@ -113,51 +94,79 @@ class DashboardPage extends ConsumerWidget {
                         : (stats != null ? _formatInt(stats.uwQueue) : '—'),
                     trend: isCustomer ? 'N/A' : (stats != null ? 'Live' : '—'),
                     trendUp: true,
+                    color: Colors.indigo.shade600,
                   ),
                 ],
               );
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Premium Trends',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Premium Trends',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Revenue growth over last 6 months',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Last 6 Months',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: AppTheme.primaryColor,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer.withValues(
+                            alpha: 0.3,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Last 6 Months',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   trendsAsync.when(
-                    loading: () => const SizedBox(
-                      height: 120,
-                      child: Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
+                    loading: () =>
+                        const SizedBox(height: 180, child: AppLoader()),
                     error: (_, _e) => const SizedBox(
-                      height: 120,
-                      child: Center(child: Text('Could not load trend data')),
+                      height: 180,
+                      child: Center(
+                        child: Text(
+                          'Could not load trend data',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
                     ),
                     data: (trends) {
                       if (trends.isEmpty) {
                         return const SizedBox(
-                          height: 120,
+                          height: 180,
                           child: Center(child: Text('No trend data available')),
                         );
                       }
@@ -165,33 +174,55 @@ class DashboardPage extends ConsumerWidget {
                           .map((t) => t.amount)
                           .reduce((a, b) => a > b ? a : b);
                       return SizedBox(
-                        height: 140,
+                        height: 180,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: trends.map((t) {
                             final barH = maxAmount > 0
-                                ? (t.amount / maxAmount * 100).clamp(8.0, 100.0)
-                                : 8.0;
+                                ? (t.amount / maxAmount * 140).clamp(
+                                    12.0,
+                                    140.0,
+                                  )
+                                : 12.0;
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Container(
-                                  width: 32,
-                                  height: barH,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withValues(
-                                      alpha: 0.7,
-                                    ),
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(4),
+                                Tooltip(
+                                  message: '₹${t.amount.toStringAsFixed(2)}',
+                                  child: Container(
+                                    width: 40,
+                                    height: barH,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          theme.colorScheme.primary,
+                                          theme.colorScheme.primary.withValues(
+                                            alpha: 0.6,
+                                          ),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: theme.colorScheme.primary
+                                              .withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 12),
                                 Text(
                                   t.label,
-                                  style: theme.textTheme.labelSmall,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ],
                             );
@@ -217,6 +248,7 @@ class _MetricCard extends StatelessWidget {
     required this.value,
     required this.trend,
     required this.trendUp,
+    required this.color,
   });
 
   final IconData icon;
@@ -224,44 +256,67 @@ class _MetricCard extends StatelessWidget {
   final String value;
   final String trend;
   final bool trendUp;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Icon(icon, size: 20, color: AppTheme.primaryColor),
-                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, size: 20, color: color),
+                ),
+                const SizedBox(width: 12),
                 Flexible(
                   child: Text(
                     label.toUpperCase(),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w800,
                       color: theme.colorScheme.onSurfaceVariant,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 12),
             Text(
               value,
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1,
               ),
             ),
-            Text(
-              trend,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: trendUp ? Colors.green : Colors.red,
-                fontWeight: FontWeight.w700,
-              ),
+            Row(
+              children: [
+                Icon(
+                  trendUp ? Icons.trending_up : Icons.trending_down,
+                  size: 14,
+                  color: trendUp ? Colors.green.shade600 : Colors.red.shade600,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  trend,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: trendUp
+                        ? Colors.green.shade700
+                        : Colors.red.shade700,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

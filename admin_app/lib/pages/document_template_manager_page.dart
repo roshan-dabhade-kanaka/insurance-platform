@@ -108,7 +108,7 @@ class _DocumentTemplateManagerPageState
                 context: context,
                 barrierDismissible: false,
                 builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
+                    const AppLoader(),
               );
 
               try {
@@ -120,10 +120,10 @@ class _DocumentTemplateManagerPageState
                 };
 
                 if (item == null) {
-                  await client.post('/documents/templates', data: payload);
+                  await client.post('documents/templates', data: payload);
                 } else {
                   await client.put(
-                    '/documents/templates/${item.id}',
+                    'documents/templates/${item.id}',
                     data: payload,
                   );
                 }

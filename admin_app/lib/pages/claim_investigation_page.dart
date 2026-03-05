@@ -25,8 +25,13 @@ class ClaimInvestigationPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const InfoBox(
+            message:
+                'Review pending claims and initiate formal investigations where required by policy rules.',
+          ),
+          const SizedBox(height: 24),
           claimState.when(
-            loading: () => const LinearProgressIndicator(),
+            loading: () => const AppLoader(),
             error: (err, stack) => Center(child: Text('Error: $err')),
             data: (claims) {
               final pendingClaims = claims

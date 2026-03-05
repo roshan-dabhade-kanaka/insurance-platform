@@ -35,8 +35,22 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
 
-    const port = process.env.PORT || 3000;
-    await app.listen(port);
+    let port = parseInt(process.env.PORT || '3000', 10);
+    const maxPort = port + 10;
+    while (true) {
+        try {
+            await app.listen(port);
+            break;
+        } catch (err: unknown) {
+            const code = (err as NodeJS.ErrnoException)?.code;
+            if (code === 'EADDRINUSE' && port < maxPort) {
+                logger.warn(`Port ${port} in use, trying ${port + 1}...`);
+                port++;
+            } else {
+                throw err;
+            }
+        }
+    }
     logger.log(`Application is running on: http://localhost:${port}/api`);
     logger.log(`Swagger documentation available at: http://localhost:${port}/docs`);
 }

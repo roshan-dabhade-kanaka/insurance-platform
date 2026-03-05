@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../widgets/widgets.dart';
 
 import '../models/audit.dart';
 import '../providers/audit_provider.dart';
@@ -38,7 +39,9 @@ class _ComplianceAuditLogsPageState
   }
 
   void _load() {
-    ref.read(auditProvider.notifier).fetchPage(
+    ref
+        .read(auditProvider.notifier)
+        .fetchPage(
           page: 0,
           pageSize: _pageSize,
           entityType: _entityFilter.entityType,
@@ -51,7 +54,9 @@ class _ComplianceAuditLogsPageState
   }
 
   void _applyFilters() {
-    ref.read(auditProvider.notifier).applyFilters(
+    ref
+        .read(auditProvider.notifier)
+        .applyFilters(
           entityType: _entityFilter.entityType,
           changedBy: _userFilterController.text.trim().isEmpty
               ? null
@@ -62,21 +67,105 @@ class _ComplianceAuditLogsPageState
   }
 
   void _pickFromDate() async {
-    final picked = await showDatePicker(
+    final initial = _fromDate ?? DateTime.now();
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: _fromDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (ctx) {
+        final t = Theme.of(ctx);
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 360),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'From date',
+                  style: t.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 320,
+                    child: CalendarDatePicker(
+                      initialDate: initial,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      onDateChanged: (d) => Navigator.of(ctx).pop(d),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
     if (picked != null && mounted) setState(() => _fromDate = picked);
   }
 
   void _pickToDate() async {
-    final picked = await showDatePicker(
+    final initial = _toDate ?? _fromDate ?? DateTime.now();
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: _toDate ?? _fromDate ?? DateTime.now(),
-      firstDate: _fromDate ?? DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (ctx) {
+        final t = Theme.of(ctx);
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 360),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'To date',
+                  style: t.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 320,
+                    child: CalendarDatePicker(
+                      initialDate: initial,
+                      firstDate: _fromDate ?? DateTime(2020),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      onDateChanged: (d) => Navigator.of(ctx).pop(d),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
     if (picked != null && mounted) setState(() => _toDate = picked);
   }
@@ -91,18 +180,9 @@ class _ComplianceAuditLogsPageState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Compliance Audit Logs',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Quote history, claim history, underwriting decisions, payout authorization, workflow state changes.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+          const InfoBox(
+            message:
+                'Audit logs track all critical system events including quote history, claim history, underwriting decisions, and workflow state changes.',
           ),
           const SizedBox(height: 24),
           Card(
@@ -187,62 +267,64 @@ class _ComplianceAuditLogsPageState
           ),
           const SizedBox(height: 24),
           auditState.when(
-              data: (listState) => _AuditDataTable(
-                logs: listState.logs,
-                totalElements: listState.totalElements,
-                page: listState.page,
-                pageSize: listState.pageSize,
-                onPageChanged: (page) {
-                  ref.read(auditProvider.notifier).goToPage(page);
-                },
-              ),
-              loading: () {
-                final prev = auditState.valueOrNull;
-                if (prev != null) {
-                  return _AuditDataTable(
-                    logs: prev.logs,
-                    totalElements: prev.totalElements,
-                    page: prev.page,
-                    pageSize: prev.pageSize,
-                    onPageChanged: (p) => ref.read(auditProvider.notifier).goToPage(p),
-                  );
-                }
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32),
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+            data: (listState) => _AuditDataTable(
+              logs: listState.logs,
+              totalElements: listState.totalElements,
+              page: listState.page,
+              pageSize: listState.pageSize,
+              onPageChanged: (page) {
+                ref.read(auditProvider.notifier).goToPage(page);
               },
-              error: (e, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load audit logs',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        e.toString(),
-                        style: theme.textTheme.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      FilledButton.icon(
-                        onPressed: _load,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
-                      ),
-                    ],
-                  ),
+            ),
+            loading: () {
+              final prev = auditState.valueOrNull;
+              if (prev != null) {
+                return _AuditDataTable(
+                  logs: prev.logs,
+                  totalElements: prev.totalElements,
+                  page: prev.page,
+                  pageSize: prev.pageSize,
+                  onPageChanged: (p) =>
+                      ref.read(auditProvider.notifier).goToPage(p),
+                );
+              }
+              return const Center(
+                child: Padding(padding: EdgeInsets.all(32), child: AppLoader()),
+              );
+            },
+            error: (e, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: theme.colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Failed to load audit logs',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      e.toString(),
+                      style: theme.textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _load,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
                 ),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -312,11 +394,21 @@ class _AuditDataTable extends StatelessWidget {
                   .map(
                     (l) => DataRow(
                       cells: [
-                        DataCell(Text(_timeFormat.format(l.occurredAt.toLocal()))),
+                        DataCell(
+                          Text(_timeFormat.format(l.occurredAt.toLocal())),
+                        ),
                         DataCell(Text(_entityLabel(l.entityType))),
-                        DataCell(Text(l.entityId.length > 12 ? '${l.entityId.substring(0, 12)}…' : l.entityId)),
+                        DataCell(
+                          Text(
+                            l.entityId.length > 12
+                                ? '${l.entityId.substring(0, 12)}…'
+                                : l.entityId,
+                          ),
+                        ),
                         DataCell(Text(l.action)),
-                        DataCell(Text('${l.oldState ?? "–"} → ${l.newState ?? "–"}')),
+                        DataCell(
+                          Text('${l.oldState ?? "–"} → ${l.newState ?? "–"}'),
+                        ),
                         DataCell(Text(l.changedBy ?? '–')),
                       ],
                     ),
@@ -363,9 +455,9 @@ class _AuditDataTable extends StatelessWidget {
 
   String _entityLabel(String type) {
     final f = AuditEntityFilter.values.cast<AuditEntityFilter?>().firstWhere(
-          (e) => e!.entityType == type,
-          orElse: () => null,
-        );
+      (e) => e!.entityType == type,
+      orElse: () => null,
+    );
     return f?.label ?? type;
   }
 }

@@ -81,6 +81,11 @@ export class ProductService {
             effectiveTo: data.effectiveTo ?? null,
             changelog: data.changelog ?? `Version ${nextVersionNumber}`,
             productSnapshot: { productName: product.name, productCode: product.code },
+            quoteFields: [
+                { fieldName: 'sumInsured', label: 'Sum Insured', type: 'number', required: true },
+                { fieldName: 'policyTerm', label: 'Policy Term', type: 'dropdown', options: [10, 20, 30], required: true },
+                { fieldName: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: true }
+            ]
         });
         return this.versionRepo.save(version);
     }
@@ -109,5 +114,42 @@ export class ProductService {
             parameters: data.parameters ?? {},
         });
         return this.coverageRepo.save(coverage);
+    }
+
+    async getCoverages(productId: string, tenantId?: string): Promise<any[]> {
+        const version = await this.getActiveVersion(productId, tenantId);
+        if (!version) return [];
+
+        return this.coverageRepo.find({
+            where: { productVersionId: version.id },
+            select: ['id', 'name', 'code'],
+        }).then(items => items.map(i => ({
+            coverageId: i.id,
+            coverageName: i.name,
+            coverageCode: i.code
+        })));
+    }
+
+    async getQuoteFields(productId: string, tenantId?: string): Promise<any[]> {
+        const version = await this.getActiveVersion(productId, tenantId);
+        return version?.quoteFields ?? [];
+    }
+
+    private async getActiveVersion(productId: string, tenantId?: string): Promise<ProductVersion | null> {
+        // Try to find status=PUBLISHED (active), fallback to latest draft
+        let version = await this.versionRepo.findOne({
+            where: tenantId
+                ? { productId, tenantId, status: ProductVersionStatus.ACTIVE }
+                : { productId, status: ProductVersionStatus.ACTIVE },
+            order: { versionNumber: 'DESC' }
+        });
+
+        if (!version) {
+            version = await this.versionRepo.findOne({
+                where: tenantId ? { productId, tenantId } : { productId },
+                order: { versionNumber: 'DESC' }
+            });
+        }
+        return version;
     }
 }
