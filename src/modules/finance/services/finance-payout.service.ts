@@ -19,7 +19,7 @@
 // Emits: finance.payout.approved, finance.payout.disbursed, finance.payout.rejected
 // =============================================================================
 
-import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -29,7 +29,7 @@ import { PayoutApproval } from '../entities/finance.entity';
 import { PayoutPartialRecord } from '../entities/finance.entity';
 import { PayoutDisbursement } from '../entities/finance.entity';
 import { AuditLogService } from '../../audit/services/audit-log.service';
-import { AuditEntityType, DisbursementStatus } from '../../../common/enums';
+import { AuditEntityType, DisbursementStatus, ApprovalDecision } from '../../../common/enums';
 import { TemporalClientService } from '../../../temporal/worker/worker';
 import { financeApprovalSignal, FinanceDecision } from '../../../temporal/shared/types';
 
@@ -211,8 +211,9 @@ export class FinancePayoutService {
         const approval = this.approvalRepo.create({
             tenantId: dto.tenantId,
             payoutRequestId: dto.payoutRequestId,
+            approvalLevel: request.currentApprovalLevel,
             approverId: dto.approval.approverId,
-            decision: dto.approval.decision as any,
+            decision: this.mapFinanceDecisionToApprovalDecision(dto.approval.decision) as any,
             approvedAmount: dto.approval.approvedAmount != null ? String(dto.approval.approvedAmount) : null,
             notes: dto.approval.notes,
             decidedAt: new Date(),
@@ -367,30 +368,68 @@ export class FinancePayoutService {
     // ─────────────────────────────────────────────────────────────────────────
 
     async submitApproval(dto: SubmitFinanceDecisionDto): Promise<void> {
-        const handle = await this.temporalClient.getClaimHandle(dto.tenantId, dto.claimId);
+        try {
+            const handle = await this.temporalClient.getClaimHandle(dto.tenantId, dto.claimId);
 
-        await handle.signal(financeApprovalSignal, {
-            approverId: dto.approverId,
-            decision: dto.decision,
-            approvedAmount: dto.approvedAmount,
-            partialInstallments: dto.partialInstallments,
-            notes: dto.notes,
-        });
-
-        await this.auditLog.log({
-            tenantId: dto.tenantId,
-            entityType: 'CLAIM',
-            entityId: dto.claimId,
-            action: 'FINANCE_DECISION_SIGNALED',
-            performedBy: dto.approverId,
-            context: {
+            await handle.signal(financeApprovalSignal, {
+                approverId: dto.approverId,
                 decision: dto.decision,
                 approvedAmount: dto.approvedAmount,
-                installmentCount: dto.partialInstallments?.length,
-            },
-        });
+                partialInstallments: dto.partialInstallments,
+                notes: dto.notes,
+            });
+        } catch (err: any) {
+            this.logger.error(`Failed to signal financeApproval: ${err.message}. Manual approval fallback.`);
 
-        this.logger.log(`Finance approval signal sent: ${dto.decision} [claimId=${dto.claimId}]`);
+            try {
+                // Fallback: find the pending payout request and record approval manually
+                const request = await this.payoutRequestRepo.findOne({
+                    where: {
+                        claimId: dto.claimId,
+                        tenantId: dto.tenantId,
+                        status: 'PENDING_APPROVAL' as any
+                    }
+                });
+
+                if (request) {
+                    await this.recordApproval({
+                        tenantId: dto.tenantId,
+                        payoutRequestId: request.id,
+                        approval: {
+                            approverId: dto.approverId,
+                            decision: dto.decision,
+                            approvedAmount: dto.approvedAmount,
+                            notes: dto.notes,
+                            partialInstallments: dto.partialInstallments
+                        }
+                    });
+                } else {
+                    throw new Error(`No PENDING_APPROVAL payout request found for claim ${dto.claimId}`);
+                }
+            } catch (fallbackErr: any) {
+                this.logger.error(`Manual fallback failed: ${fallbackErr.message}`, fallbackErr.stack);
+                throw new BadRequestException(`DEBUG (Approve): ${fallbackErr.message}`);
+            }
+        }
+
+        try {
+            await this.auditLog.log({
+                tenantId: dto.tenantId,
+                entityType: 'CLAIM',
+                entityId: dto.claimId,
+                action: 'FINANCE_DECISION_SIGNALED',
+                performedBy: dto.approverId,
+                context: {
+                    decision: dto.decision,
+                    approvedAmount: dto.approvedAmount,
+                    installmentCount: dto.partialInstallments?.length,
+                },
+            });
+
+            this.logger.log(`Finance approval signal sent: ${dto.decision} [claimId=${dto.claimId}]`);
+        } catch (auditErr: any) {
+            this.logger.error(`Audit log failed after finance approval: ${auditErr.message}`);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -423,6 +462,20 @@ export class FinancePayoutService {
             case FinanceDecision.REJECT: return 'REJECTED';
             case FinanceDecision.ESCALATE: return 'ESCALATED';
             default: return 'PENDING_APPROVAL';
+        }
+    }
+
+    private mapFinanceDecisionToApprovalDecision(decision: FinanceDecision): ApprovalDecision {
+        switch (decision) {
+            case FinanceDecision.APPROVE_FULL:
+            case FinanceDecision.APPROVE_PARTIAL:
+                return ApprovalDecision.APPROVED;
+            case FinanceDecision.REJECT:
+                return ApprovalDecision.REJECTED;
+            case FinanceDecision.ESCALATE:
+                return ApprovalDecision.ESCALATED;
+            default:
+                return ApprovalDecision.PENDING;
         }
     }
 

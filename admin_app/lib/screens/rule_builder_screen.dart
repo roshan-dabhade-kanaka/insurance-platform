@@ -114,10 +114,11 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
 
   Map<String, dynamic> _generateJson() {
     if (_ruleType == 'Pricing') {
-      return {
+      final map = <String, dynamic>{
         'baseRate': double.tryParse(_rateController.text) ?? 0.0,
         'factors': [],
       };
+      return map;
     }
 
     final conditionList = _conditions.map((c) => c.toJson()).toList();
@@ -297,40 +298,42 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
               const SizedBox(height: 24),
 
               // Conditions Builder
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Conditions',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          TextButton.icon(
-                            onPressed: () =>
-                                setState(() => _conditions.add(Condition())),
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add Condition'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _conditions.length,
-                        itemBuilder: (context, index) =>
-                            _buildConditionRow(index, theme),
-                      ),
-                    ],
+              if (_ruleType == 'Eligibility') ...[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Conditions',
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            TextButton.icon(
+                              onPressed: () =>
+                                  setState(() => _conditions.add(Condition())),
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add Condition'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _conditions.length,
+                          itemBuilder: (context, index) =>
+                              _buildConditionRow(index, theme),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
+              ],
 
               // Event Configuration
               Card(
@@ -380,10 +383,6 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
                             labelText: 'Rate',
                             hintText: 'e.g. 0.02',
                           ),
-                          validator: (v) =>
-                              _ruleType == 'Pricing' && (v == null || v.isEmpty)
-                              ? 'Required'
-                              : null,
                         ),
                       ],
                     ],

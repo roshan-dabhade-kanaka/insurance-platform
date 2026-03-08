@@ -7,11 +7,21 @@ import '../providers/admin_providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
-class FinancePayoutApprovalPage extends ConsumerWidget {
+class FinancePayoutApprovalPage extends ConsumerStatefulWidget {
   const FinancePayoutApprovalPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FinancePayoutApprovalPage> createState() =>
+      _FinancePayoutApprovalPageState();
+}
+
+class _FinancePayoutApprovalPageState
+    extends ConsumerState<FinancePayoutApprovalPage> {
+  final Set<String> _loadingPayoutIds = {};
+  final Set<String> _loadingHoldIds = {};
+
+  @override
+  Widget build(BuildContext context) {
     final financeState = ref.watch(financeProvider);
     final processedAsync = ref.watch(processedTodayProvider);
     final theme = Theme.of(context);
@@ -29,7 +39,8 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                 'Approve or hold pending disbursements. Approved payouts will be processed by the finance integration service.',
           ),
           const SizedBox(height: 24),
-          if (financeState.isLoading) const AppLoader(),
+          if (financeState.isLoading && !financeState.hasValue)
+            const AppLoader(),
           Row(
             children: [
               // ── Pending disbursement card (live from API) ──────────────
@@ -150,6 +161,9 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
               }
               return Column(
                 children: payouts.map((payout) {
+                  final isApproving = _loadingPayoutIds.contains(payout.id);
+                  final isHolding = _loadingHoldIds.contains(payout.id);
+
                   return Card(
                     margin: const EdgeInsets.only(bottom: 16),
                     child: Padding(
@@ -158,18 +172,23 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                         title: 'Payout Request: ${payout.id.substring(0, 8)}',
                         subtitle:
                             'Amount: ₹${payout.totalAmount.toStringAsFixed(2)} • Status: ${payout.status}',
+                        isLoadingApprove: isApproving,
+                        isLoadingReject: isHolding,
                         onApprove: canApprovePayout
                             ? () async {
+                                setState(
+                                  () => _loadingPayoutIds.add(payout.id),
+                                );
                                 try {
                                   await ref
                                       .read(financeProvider.notifier)
                                       .approvePayout(payout.claimId, {
                                         'approverId': user.id,
-                                        'decision': 'APPROVE',
+                                        'decision': 'APPROVE_FULL',
                                         'approvedAmount': payout.totalAmount,
                                         'notes': 'Approved via Finance UI.',
                                       });
-                                  if (context.mounted) {
+                                  if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text(
@@ -179,7 +198,7 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                                     );
                                   }
                                 } catch (e) {
-                                  if (context.mounted) {
+                                  if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('Approval failed: $e'),
@@ -187,11 +206,18 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                                       ),
                                     );
                                   }
+                                } finally {
+                                  if (mounted) {
+                                    setState(
+                                      () => _loadingPayoutIds.remove(payout.id),
+                                    );
+                                  }
                                 }
                               }
                             : null,
                         onReject: canApprovePayout
                             ? () async {
+                                setState(() => _loadingHoldIds.add(payout.id));
                                 try {
                                   await ref
                                       .read(financeProvider.notifier)
@@ -203,7 +229,7 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                                           'approverId': user.id,
                                         },
                                       );
-                                  if (context.mounted) {
+                                  if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Payout put on hold.'),
@@ -211,12 +237,18 @@ class FinancePayoutApprovalPage extends ConsumerWidget {
                                     );
                                   }
                                 } catch (e) {
-                                  if (context.mounted) {
+                                  if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('Failed to hold: $e'),
                                         backgroundColor: Colors.red,
                                       ),
+                                    );
+                                  }
+                                } finally {
+                                  if (mounted) {
+                                    setState(
+                                      () => _loadingHoldIds.remove(payout.id),
                                     );
                                   }
                                 }

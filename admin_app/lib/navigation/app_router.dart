@@ -42,141 +42,130 @@ class AppRouter {
   static const String documentTemplateManager = '/document-template-manager';
   static const String notificationConfiguration = '/notification-configuration';
 
-  static final List<SidebarDestination> sidebarDestinations = [
+  static List<SidebarDestination> get sidebarDestinations => [
     SidebarDestination(
       route: dashboard,
       label: 'Dashboard',
       icon: Icons.dashboard_outlined,
     ),
     SidebarDestination(
-      route: productConfig,
-      label: 'Product Configuration',
-      icon: Icons.inventory_2_outlined,
+      label: 'Product Setup',
+      icon: Icons.settings_applications_outlined,
+      children: [
+        SidebarDestination(
+          route: productConfig,
+          label: 'Product Configuration',
+          icon: Icons.inventory_2_outlined,
+        ),
+        SidebarDestination(
+          route: coverageSetup,
+          label: 'Coverage Setup',
+          icon: Icons.verified_user_outlined,
+        ),
+        SidebarDestination(
+          route: ruleConfig,
+          label: 'Rule Configuration',
+          icon: Icons.rule_outlined,
+        ),
+      ],
     ),
     SidebarDestination(
-      route: coverageSetup,
-      label: 'Coverage Setup',
-      icon: Icons.verified_user_outlined,
+      label: 'New Policy Purchase Workflow',
+      icon: Icons.shopping_cart_checkout_outlined,
+      children: [
+        SidebarDestination(
+          route: riskProfiling,
+          label: 'Risk Profiling',
+          icon: Icons.assessment_outlined,
+        ),
+        SidebarDestination(
+          route: premiumCalculation,
+          label: 'Premium Calculation',
+          icon: Icons.calculate_outlined,
+        ),
+        SidebarDestination(
+          route: quoteCreation,
+          label: 'Create Quote',
+          icon: Icons.add_chart_outlined,
+        ),
+        SidebarDestination(
+          route: quoteLifecycle,
+          label: 'Quote Lifecycle',
+          icon: Icons.timeline_outlined,
+        ),
+        SidebarDestination(
+          route: underwritingDecision,
+          label: 'Underwriting Decision',
+          icon: Icons.gavel_outlined,
+        ),
+        SidebarDestination(
+          route: policyIssuance,
+          label: 'Policy Issuance',
+          icon: Icons.task_outlined,
+        ),
+        SidebarDestination(
+          route: policyLifecycle,
+          label: 'Active Policies',
+          icon: Icons.shield_outlined,
+        ),
+      ],
     ),
     SidebarDestination(
-      route: ruleConfig,
-      label: 'Rule Configuration',
-      icon: Icons.rule_outlined,
+      label: 'Insurance Claim Workflow',
+      icon: Icons.health_and_safety_outlined,
+      children: [
+        SidebarDestination(
+          route: claimSubmission,
+          label: 'Claim Submission',
+          icon: Icons.upload_file_outlined,
+        ),
+        SidebarDestination(
+          route: claimInvestigation,
+          label: 'Claim Investigation',
+          icon: Icons.search_outlined,
+        ),
+        SidebarDestination(
+          route: fraudReview,
+          label: 'Fraud Review',
+          icon: Icons.warning_amber_outlined,
+        ),
+        SidebarDestination(
+          route: assessment,
+          label: 'Assessment',
+          icon: Icons.fact_check_outlined,
+        ),
+        SidebarDestination(
+          route: financePayout,
+          label: 'Finance Payout Approval',
+          icon: Icons.account_balance_wallet_outlined,
+        ),
+      ],
     ),
     SidebarDestination(
-      route: riskProfiling,
-      label: 'Risk Profiling',
-      icon: Icons.assessment_outlined,
-    ),
-    SidebarDestination(
-      route: premiumCalculation,
-      label: 'Premium Calculation',
-      icon: Icons.calculate_outlined,
-    ),
-    SidebarDestination(
-      route: quoteCreation,
-      label: 'Create Quote',
-      icon: Icons.add_chart_outlined,
-    ),
-    SidebarDestination(
-      route: quoteLifecycle,
-      label: 'Quote Lifecycle',
-      icon: Icons.timeline_outlined,
-    ),
-    SidebarDestination(
-      route: underwritingDecision,
-      label: 'Underwriting Decision',
-      icon: Icons.gavel_outlined,
-    ),
-    SidebarDestination(
-      route: policyIssuance,
-      label: 'Policy Issuance',
-      icon: Icons.task_outlined,
-    ),
-    SidebarDestination(
-      route: policyLifecycle,
-      label: 'Active Policies',
-      icon: Icons.shield_outlined,
-    ),
-    SidebarDestination(
-      route: claimSubmission,
-      label: 'Claim Submission',
-      icon: Icons.upload_file_outlined,
-    ),
-    SidebarDestination(
-      route: claimInvestigation,
-      label: 'Claim Investigation',
-      icon: Icons.search_outlined,
-    ),
-    SidebarDestination(
-      route: fraudReview,
-      label: 'Fraud Review',
-      icon: Icons.warning_amber_outlined,
-    ),
-    SidebarDestination(
-      route: assessment,
-      label: 'Assessment',
-      icon: Icons.fact_check_outlined,
-    ),
-    SidebarDestination(
-      route: financePayout,
-      label: 'Finance Payout Approval',
-      icon: Icons.account_balance_wallet_outlined,
-    ),
-    SidebarDestination(
-      route: complianceAudit,
-      label: 'Compliance Audit Logs',
-      icon: Icons.history_outlined,
-    ),
-    SidebarDestination(
-      route: userManagement,
-      label: 'User Management',
-      icon: Icons.people_outlined,
-    ),
-    SidebarDestination(
-      route: tenantManagement,
-      label: 'Tenant Management',
-      icon: Icons.business_outlined,
-    ),
-    SidebarDestination(
-      route: reportGeneration,
-      label: 'Report Generation',
-      icon: Icons.summarize_outlined,
-    ),
-    SidebarDestination(
-      route: productBuilder,
-      label: 'Product Builder',
-      icon: Icons.build_outlined,
-    ),
-    SidebarDestination(
-      route: pricingRuleEngine,
-      label: 'Pricing Rule Engine',
-      icon: Icons.tune_outlined,
-    ),
-    SidebarDestination(
-      route: workflowConfigurator,
-      label: 'Workflow Configurator',
-      icon: Icons.account_tree_outlined,
-    ),
-    SidebarDestination(
-      route: lifecycleStateEditor,
-      label: 'Lifecycle State Editor',
-      icon: Icons.linear_scale_outlined,
-    ),
-    SidebarDestination(
-      route: slaMonitoring,
-      label: 'SLA Monitoring',
-      icon: Icons.schedule_outlined,
-    ),
-    SidebarDestination(
-      route: documentTemplateManager,
-      label: 'Document Template Manager',
-      icon: Icons.snippet_folder_outlined,
-    ),
-    SidebarDestination(
-      route: notificationConfiguration,
-      label: 'Notification Configuration',
-      icon: Icons.notifications_active_outlined,
+      label: 'Administration & Reporting',
+      icon: Icons.admin_panel_settings_outlined,
+      children: [
+        SidebarDestination(
+          route: complianceAudit,
+          label: 'Compliance Audit Logs',
+          icon: Icons.history_outlined,
+        ),
+        SidebarDestination(
+          route: userManagement,
+          label: 'User Management',
+          icon: Icons.people_outlined,
+        ),
+        SidebarDestination(
+          route: tenantManagement,
+          label: 'Tenant Management',
+          icon: Icons.business_outlined,
+        ),
+        SidebarDestination(
+          route: reportGeneration,
+          label: 'Report Generation',
+          icon: Icons.summarize_outlined,
+        ),
+      ],
     ),
   ];
 
@@ -185,6 +174,11 @@ class AppRouter {
     if (path == login) return 'Sign in';
     for (final d in sidebarDestinations) {
       if (d.route == path) return d.label;
+      if (d.children != null) {
+        for (final c in d.children!) {
+          if (c.route == path) return c.label;
+        }
+      }
     }
     return 'InsureAdmin';
   }
@@ -377,11 +371,13 @@ class AppRouter {
 
 class SidebarDestination {
   const SidebarDestination({
-    required this.route,
+    this.route,
     required this.label,
-    required this.icon,
+    this.icon,
+    this.children,
   });
-  final String route;
+  final String? route;
   final String label;
-  final IconData icon;
+  final IconData? icon;
+  final List<SidebarDestination>? children;
 }

@@ -5,6 +5,17 @@ enum ApprovalAction { approve, reject, requestInfo }
 
 /// Panel for underwriting/finance approval: show summary and Approve/Reject actions.
 class ApprovalDecisionPanel extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final Widget? detailWidget;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+  final VoidCallback? onRequestInfo;
+  final String approveLabel;
+  final String rejectLabel;
+  final bool isLoadingApprove;
+  final bool isLoadingReject;
+
   const ApprovalDecisionPanel({
     super.key,
     required this.title,
@@ -15,16 +26,9 @@ class ApprovalDecisionPanel extends StatelessWidget {
     this.onRequestInfo,
     this.approveLabel = 'Approve',
     this.rejectLabel = 'Reject',
+    this.isLoadingApprove = false,
+    this.isLoadingReject = false,
   });
-
-  final String title;
-  final String? subtitle;
-  final Widget? detailWidget;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
-  final VoidCallback? onRequestInfo;
-  final String approveLabel;
-  final String rejectLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +40,20 @@ class ApprovalDecisionPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(title, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
-              Text(subtitle!, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                subtitle!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
             if (detailWidget != null) ...[
               const SizedBox(height: 16),
@@ -50,16 +64,38 @@ class ApprovalDecisionPanel extends StatelessWidget {
               children: [
                 if (onApprove != null)
                   FilledButton.icon(
-                    onPressed: onApprove,
-                    icon: const Icon(Icons.check_circle_outline, size: 20),
+                    onPressed: isLoadingApprove || isLoadingReject
+                        ? null
+                        : onApprove,
+                    icon: isLoadingApprove
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.check_circle_outline, size: 20),
                     label: Text(approveLabel),
                   ),
-                if (onApprove != null && onReject != null) const SizedBox(width: 12),
+                if (onApprove != null && onReject != null)
+                  const SizedBox(width: 12),
                 if (onReject != null)
                   FilledButton.tonal(
-                    onPressed: onReject,
-                    style: FilledButton.styleFrom(foregroundColor: theme.colorScheme.error),
-                    child: Text(rejectLabel),
+                    onPressed: isLoadingApprove || isLoadingReject
+                        ? null
+                        : onReject,
+                    style: FilledButton.styleFrom(
+                      foregroundColor: theme.colorScheme.error,
+                    ),
+                    child: isLoadingReject
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(rejectLabel),
                   ),
                 if (onRequestInfo != null) ...[
                   const SizedBox(width: 12),

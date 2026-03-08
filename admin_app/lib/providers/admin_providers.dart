@@ -271,6 +271,8 @@ class InsuranceRule {
       name: (json['name'] ?? 'Unnamed Rule').toString(),
       type: type,
       logic:
+          json['expression'] as Map<String, dynamic>? ??
+          json['definition'] as Map<String, dynamic>? ??
           json['ruleDefinition'] as Map<String, dynamic>? ??
           json['rule_definition'] as Map<String, dynamic>? ??
           json['ruleLogic'] as Map<String, dynamic>? ??

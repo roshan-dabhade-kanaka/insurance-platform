@@ -21,9 +21,26 @@ class SidebarNavigation extends ConsumerWidget {
     if (user == null) {
       return const SizedBox.shrink();
     }
-    final visible = AppRouter.sidebarDestinations
-        .where((d) => canAccessRoute(d.route, user))
-        .toList();
+    final visible = <SidebarDestination>[];
+    for (final d in AppRouter.sidebarDestinations) {
+      if (d.children != null) {
+        final visibleChildren = d.children!
+            .where((c) => c.route != null && canAccessRoute(c.route!, user))
+            .toList();
+        if (visibleChildren.isNotEmpty) {
+          visible.add(
+            SidebarDestination(
+              label: d.label,
+              icon: d.icon,
+              children: visibleChildren,
+            ),
+          );
+        }
+      } else if (d.route != null && canAccessRoute(d.route!, user)) {
+        visible.add(d);
+      }
+    }
+
     return Container(
       width: 260,
       decoration: BoxDecoration(
@@ -37,12 +54,18 @@ class SidebarNavigation extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           children: [
             _Logo(),
-            const SizedBox(height: 24),
-            ...visible.map((d) => _NavTile(
-                  destination: d,
-                  selected: route == d.route ||
-                      (d.route != '/' && route.startsWith(d.route)),
-                )),
+            const SizedBox(height: 16),
+            ...visible.map((d) {
+              if (d.children != null) {
+                return _NavGroupTile(group: d, currentRoute: route);
+              }
+              return _NavTile(
+                destination: d,
+                selected:
+                    route == d.route ||
+                    (d.route != '/' && route.startsWith(d.route!)),
+              );
+            }),
           ],
         ),
       ),
@@ -64,16 +87,19 @@ class _Logo extends StatelessWidget {
               color: AppTheme.primaryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.shield_outlined,
-                color: AppTheme.primaryColor, size: 24),
+            child: const Icon(
+              Icons.shield_outlined,
+              color: AppTheme.primaryColor,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 12),
           Text(
             'InsureAdmin',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.5,
+            ),
           ),
         ],
       ),
@@ -102,8 +128,8 @@ class _NavTileState extends State<_NavTile> {
     final bgColor = selected
         ? AppTheme.primaryColor.withValues(alpha: 0.1)
         : _hovered
-            ? AppTheme.primaryColor.withValues(alpha: 0.12)
-            : Colors.transparent;
+        ? AppTheme.primaryColor.withValues(alpha: 0.12)
+        : Colors.transparent;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -117,7 +143,9 @@ class _NavTileState extends State<_NavTile> {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () {
-              context.go(destination.route);
+              if (destination.route != null) {
+                context.go(destination.route!);
+              }
               if (Scaffold.maybeOf(context)?.isDrawerOpen ?? false) {
                 Navigator.of(context).pop();
               }
@@ -126,18 +154,26 @@ class _NavTileState extends State<_NavTile> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 children: [
-                  Icon(
-                    destination.icon,
-                    size: 22,
-                    color: selected ? AppTheme.primaryColor : theme.colorScheme.onSurface,
-                  ),
-                  const SizedBox(width: 16),
+                  if (destination.icon != null) ...[
+                    Icon(
+                      destination.icon,
+                      size: 22,
+                      color: selected
+                          ? AppTheme.primaryColor
+                          : theme.colorScheme.onSurface,
+                    ),
+                    const SizedBox(width: 16),
+                  ],
                   Expanded(
                     child: Text(
                       destination.label,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                        color: selected ? AppTheme.primaryColor : theme.colorScheme.onSurface,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: selected
+                            ? AppTheme.primaryColor
+                            : theme.colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -146,6 +182,64 @@ class _NavTileState extends State<_NavTile> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NavGroupTile extends StatelessWidget {
+  const _NavGroupTile({required this.group, required this.currentRoute});
+
+  final SidebarDestination group;
+  final String currentRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasActiveChild = group.children!.any(
+      (c) =>
+          currentRoute == c.route ||
+          (c.route != null &&
+              c.route != '/' &&
+              currentRoute.startsWith(c.route!)),
+    );
+
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: hasActiveChild,
+        iconColor: AppTheme.primaryColor,
+        collapsedIconColor: theme.colorScheme.onSurface,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+        childrenPadding: const EdgeInsets.only(left: 12),
+        leading: group.icon != null
+            ? Icon(
+                group.icon,
+                size: 22,
+                color: hasActiveChild
+                    ? AppTheme.primaryColor
+                    : theme.colorScheme.onSurface,
+              )
+            : null,
+        title: Text(
+          group.label,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: hasActiveChild
+                ? AppTheme.primaryColor
+                : theme.colorScheme.onSurface,
+          ),
+        ),
+        children: group.children!.map((c) {
+          return _NavTile(
+            destination: c,
+            selected:
+                currentRoute == c.route ||
+                (c.route != null &&
+                    c.route != '/' &&
+                    currentRoute.startsWith(c.route!)),
+          );
+        }).toList(),
       ),
     );
   }

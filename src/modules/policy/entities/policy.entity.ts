@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { BaseTenantEntity } from '../../../common/entities/base-tenant.entity';
 import { PolicyStatus } from '../../../common/enums';
+import { CoverageOption } from '../../product/entities/product.entity';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Policy — the issued insurance contract.
@@ -102,6 +103,10 @@ export class PolicyCoverage extends BaseTenantEntity {
 
     @Column({ name: 'coverage_option_id', type: 'uuid' })
     coverageOptionId!: string;
+
+    @ManyToOne(() => CoverageOption)
+    @JoinColumn({ name: 'coverage_option_id' })
+    coverageOption!: CoverageOption;
 
     @Column({ name: 'sum_insured', type: 'numeric', precision: 14, scale: 2 })
     sumInsured!: string;

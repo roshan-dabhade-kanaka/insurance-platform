@@ -54,4 +54,12 @@ export class CreateInvestigationDto {
     @IsString()
     @IsOptional()
     assignedInvestigatorId?: string;
+
+    @IsString()
+    @IsOptional()
+    investigatorId?: string;
+
+    @IsString()
+    @IsOptional()
+    notes?: string;
 }

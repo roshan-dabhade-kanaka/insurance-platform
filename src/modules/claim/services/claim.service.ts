@@ -24,10 +24,12 @@ import {
     Logger,
     NotFoundException,
     ConflictException,
+    BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConfigService } from '@nestjs/config';
 
 import { Claim } from '../entities/claim.entity';
 import { ClaimStatusHistory } from '../entities/claim.entity';
@@ -38,6 +40,7 @@ import { AuditLogService } from '../../audit/services/audit-log.service';
 import { AuditEntityType } from '../../../common/enums';
 import { TemporalClientService } from '../../../temporal/worker/worker';
 import { ClaimWorkflowInput, getClaimStatusQuery } from '../../../temporal/shared/types';
+import { FinancePayoutService } from '../../finance/services/finance-payout.service';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Domain Events
@@ -114,6 +117,8 @@ export interface CreateInvestigationDto {
     claimId: string;
     investigationType?: string;
     assignedInvestigatorId?: string;
+    investigatorId?: string;
+    notes?: string;
 }
 
 export interface RecordAssessmentDto {
@@ -171,6 +176,8 @@ export class ClaimService {
         private readonly temporalClient: TemporalClientService,
         private readonly auditLog: AuditLogService,
         private readonly eventEmitter: EventEmitter2,
+        private readonly configService: ConfigService,
+        private readonly financeService: FinancePayoutService,
     ) { }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -180,16 +187,50 @@ export class ClaimService {
     async submitClaim(dto: SubmitClaimDto): Promise<Claim> {
         this.logger.log(`Submitting claim [tenant=${dto.tenantId}, policy=${dto.policyId}, amount=${dto.claimedAmount}]`);
 
+        // 1. Validate the claimed amount against coverage sum insured (DB Check)
+        const res = await this.claimRepo.manager.query(
+            `SELECT sum_insured FROM policy_coverages WHERE id = $1 AND tenant_id = $2`,
+            [dto.policyCoverageId, dto.tenantId]
+        );
+        if (!res || res.length === 0) {
+            throw new BadRequestException(`Invalid coverage option selected or coverage not found.`);
+        }
+        const maxAmount = parseFloat(res[0].sum_insured);
+        if (dto.claimedAmount > maxAmount) {
+            throw new BadRequestException(`Claimed amount (₹${dto.claimedAmount}) cannot exceed the coverage sum insured (₹${maxAmount}).`);
+        }
+
+        // 2. Check for duplicates (same policy + same coverage + same loss window)
+        const dupCheck = await this.checkDuplicate({
+            tenantId: dto.tenantId,
+            claimId: '00000000-0000-0000-0000-000000000000',
+            policyId: dto.policyId,
+            policyCoverageId: dto.policyCoverageId,
+            lossDate: dto.lossDate,
+            claimedAmount: dto.claimedAmount,
+        });
+
+        if (dupCheck.isDuplicate) {
+            throw new ConflictException(
+                `Potential duplicate claim detected: ${dupCheck.duplicateClaimId}. ${dupCheck.failureReason}`
+            );
+        }
+
+        const claimNumber = this.generateClaimNumber(dto.tenantId);
+
         const claim = this.claimRepo.create({
             tenantId: dto.tenantId,
+            claimNumber,
             policyId: dto.policyId,
             policyCoverageId: dto.policyCoverageId,
             claimedAmount: dto.claimedAmount.toString(),
             lossDate: new Date(dto.lossDate).toISOString().split('T')[0],
+            reportedDate: new Date().toISOString().split('T')[0],
             lossDescription: dto.lossDescription,
             claimantData: dto.claimantData,
             status: 'SUBMITTED' as any,
             reopenCount: 0,
+            submittedBy: (dto.submittedBy && dto.submittedBy !== 'unknown') ? dto.submittedBy : null,
         });
 
         const saved = await this.claimRepo.save(claim) as any as Claim;
@@ -211,10 +252,19 @@ export class ClaimService {
             partialPayoutEnabled: dto.partialPayoutEnabled ?? true,
         };
 
-        const handle = await this.temporalClient.startClaimWorkflow(workflowInput);
+        const temporalEnabled = this.configService.get<string>('TEMPORAL_ENABLED', 'true') !== 'false';
+        let temporalWorkflowId: string | undefined;
 
-        // Store Temporal workflow ID
-        await this.claimRepo.update({ id: saved.id }, { temporalWorkflowId: handle.workflowId });
+        if (temporalEnabled) {
+            try {
+                const handle = await this.temporalClient.startClaimWorkflow(workflowInput);
+                temporalWorkflowId = handle.workflowId;
+                await this.claimRepo.update({ id: saved.id }, { temporalWorkflowId });
+            } catch (err: any) {
+                this.logger.error(`Failed to start Temporal workflow for claim ${saved.id}: ${err.message}`);
+                // Don't fail the claim submission just because Temporal is down
+            }
+        }
 
         // Emit event
         this.eventEmitter.emit(
@@ -235,13 +285,14 @@ export class ClaimService {
             context: {
                 policyId: dto.policyId,
                 claimedAmount: dto.claimedAmount,
-                temporalWorkflowId: handle.workflowId,
+                temporalWorkflowId,
             },
         });
 
-        this.logger.log(`Claim submitted [claimId=${saved.id}, workflow=${handle.workflowId}]`);
+        this.logger.log(`Claim submitted [claimId=${saved.id}, workflow=${temporalWorkflowId ?? 'NONE'}]`);
         return this.claimRepo.findOneOrFail({ where: { id: saved.id } });
     }
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // updateStatus — called by Temporal claim activities
@@ -366,6 +417,21 @@ export class ClaimService {
         } as any) as any as ClaimInvestigation;
         const saved = await this.investigationRepo.save(inv) as ClaimInvestigation;
 
+        // Signal Temporal that investigation has started/completed
+        try {
+            const handle = await this.temporalClient.getClaimHandle(input.tenantId, input.claimId);
+            await handle.signal('investigationComplete', {
+                investigatorId: input.assignedInvestigatorId ?? input.investigatorId ?? 'SYSTEM',
+                findings: input.notes ?? 'Initial investigation started',
+                evidenceSummary: [],
+                recommendFraudReview: false,
+            });
+        } catch (err: any) {
+            this.logger.error(`Failed to signal investigationComplete: ${err.message}. Manual status update fallback.`);
+            // Fallback: manually update status so it shows in Assessment tab
+            await this.updateStatus(input.tenantId, input.claimId, 'UNDER_INVESTIGATION', 'Temporal signal failed, using manual fallback');
+        }
+
         await this.auditLog.log({
             tenantId: input.tenantId,
             entityType: AuditEntityType.CLAIM,
@@ -396,6 +462,38 @@ export class ClaimService {
             assessedAt: new Date(),
         } as any) as any as ClaimAssessment;
         const saved = await this.assessmentRepo.save(assessment) as ClaimAssessment;
+
+        // Signal Temporal that assessment is complete
+        try {
+            const handle = await this.temporalClient.getClaimHandle(input.tenantId, input.claimId);
+            await handle.signal('claimAssessment', {
+                assessedBy: input.assessment.assessedBy,
+                assessedAmount: input.assessment.assessedAmount,
+                deductibleApplied: input.assessment.deductibleApplied,
+                netPayout: input.assessment.netPayout,
+                lineItemAssessment: input.assessment.lineItemAssessment,
+                assessmentNotes: input.assessment.assessmentNotes,
+            });
+        } catch (err: any) {
+            this.logger.error(`Failed to signal claimAssessment: ${err.message}. Manual status update fallback.`);
+            // Fallback: manually update status to ASSESSMENT_DONE or similar
+            await this.updateStatus(input.tenantId, input.claimId, 'ASSESSED', 'Temporal signal failed, using manual fallback');
+
+            // Fallback: Manually create payout request so it shows up in Finance tab
+            try {
+                await this.financeService.createPayoutRequest({
+                    tenantId: input.tenantId,
+                    claimId: input.claimId,
+                    assessmentId: saved.id,
+                    netPayout: input.assessment.netPayout,
+                    currencyCode: 'INR',
+                    payeeDetails: {},
+                    requestedBy: input.assessment.assessedBy,
+                });
+            } catch (payErr: any) {
+                this.logger.error(`Manual payout creation failed: ${payErr.message}`);
+            }
+        }
 
         await this.auditLog.log({
             tenantId: input.tenantId,
@@ -467,8 +565,17 @@ export class ClaimService {
     // ─────────────────────────────────────────────────────────────────────────
 
     async getWorkflowState(tenantId: string, claimId: string) {
-        const handle = await this.temporalClient.getClaimHandle(tenantId, claimId);
-        return handle.query(getClaimStatusQuery);
+        try {
+            const handle = await this.temporalClient.getClaimHandle(tenantId, claimId);
+            return await handle.query(getClaimStatusQuery);
+        } catch (err: any) {
+            this.logger.warn(`Failed to query Temporal state for claim ${claimId}: ${err.message}. Falling back to DB status.`);
+            const claim = await this.findOrFail(tenantId, claimId);
+            return {
+                status: claim.status,
+                updatedAt: claim.updatedAt,
+            };
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -486,5 +593,12 @@ export class ClaimService {
         const c = await this.claimRepo.findOne({ where: { id: claimId, tenantId } });
         if (!c) throw new NotFoundException(`Claim not found: ${claimId}`);
         return c;
+    }
+
+    private generateClaimNumber(tenantId: string): string {
+        const prefix = tenantId.slice(0, 4).toUpperCase();
+        const ts = Date.now().toString(36).toUpperCase();
+        const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+        return `CLM-${prefix}-${ts}-${rand}`;
     }
 }

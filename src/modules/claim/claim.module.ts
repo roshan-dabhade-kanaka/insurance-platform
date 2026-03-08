@@ -18,6 +18,7 @@ import { ClaimController } from './controllers/claim.controller';
 import { FraudController } from './controllers/fraud.controller';
 import { RulesModule } from '../rules/rules.module';
 import { TemporalModule } from '../../temporal/worker/worker';
+import { FinanceModule } from '../finance/finance.module';
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { TemporalModule } from '../../temporal/worker/worker';
         ]),
         RulesModule,
         TemporalModule,
+        FinanceModule,
     ],
     providers: [ClaimService, FraudReviewService],
     controllers: [ClaimController, FraudController],

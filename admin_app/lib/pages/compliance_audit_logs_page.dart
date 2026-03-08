@@ -7,8 +7,8 @@ import '../models/audit.dart';
 import '../providers/audit_provider.dart';
 
 /// Compliance Audit Logs: Quote History, Claim History, Underwriting Decisions,
-/// Payout Authorization, Workflow State Changes. Paginated DataTable with
-/// filters: Entity, User, Date range.
+/// Payout Authorization, Workflow State Changes. List-based UI to handle
+/// overflow and provide intuitive experience.
 class ComplianceAuditLogsPage extends ConsumerStatefulWidget {
   const ComplianceAuditLogsPage({super.key});
 
@@ -198,15 +198,18 @@ class _ComplianceAuditLogsPageState
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // Using Wrap with proper spacing to solve the overflow from the image
                   Wrap(
                     spacing: 16,
                     runSpacing: 12,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 220,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 220),
                         child: DropdownButtonFormField<AuditEntityFilter>(
                           value: _entityFilter,
+                          isExpanded:
+                              true, // Prevents overflow inside the button
                           decoration: const InputDecoration(
                             labelText: 'Entity',
                             isDense: true,
@@ -215,7 +218,10 @@ class _ComplianceAuditLogsPageState
                               .map(
                                 (e) => DropdownMenuItem(
                                   value: e,
-                                  child: Text(e.label),
+                                  child: Text(
+                                    e.label,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               )
                               .toList(),
@@ -224,8 +230,8 @@ class _ComplianceAuditLogsPageState
                           },
                         ),
                       ),
-                      SizedBox(
-                        width: 200,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 200),
                         child: TextField(
                           controller: _userFilterController,
                           decoration: const InputDecoration(
@@ -267,7 +273,7 @@ class _ComplianceAuditLogsPageState
           ),
           const SizedBox(height: 24),
           auditState.when(
-            data: (listState) => _AuditDataTable(
+            data: (listState) => _AuditList(
               logs: listState.logs,
               totalElements: listState.totalElements,
               page: listState.page,
@@ -279,7 +285,7 @@ class _ComplianceAuditLogsPageState
             loading: () {
               final prev = auditState.valueOrNull;
               if (prev != null) {
-                return _AuditDataTable(
+                return _AuditList(
                   logs: prev.logs,
                   totalElements: prev.totalElements,
                   page: prev.page,
@@ -331,8 +337,8 @@ class _ComplianceAuditLogsPageState
   }
 }
 
-class _AuditDataTable extends StatelessWidget {
-  const _AuditDataTable({
+class _AuditList extends StatelessWidget {
+  const _AuditList({
     required this.logs,
     required this.totalElements,
     required this.page,
@@ -359,65 +365,133 @@ class _AuditDataTable extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Row(
               children: [
                 Text(
-                  'Audit entries',
+                  'Audit Entries',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  '$totalElements total',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$totalElements total',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Timestamp')),
-                DataColumn(label: Text('Entity')),
-                DataColumn(label: Text('Entity ID')),
-                DataColumn(label: Text('Action')),
-                DataColumn(label: Text('State change')),
-                DataColumn(label: Text('User')),
-              ],
-              rows: logs
-                  .map(
-                    (l) => DataRow(
-                      cells: [
-                        DataCell(
-                          Text(_timeFormat.format(l.occurredAt.toLocal())),
+          if (logs.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(40),
+              child: Center(child: Text('No audit entries found.')),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: logs.length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final log = logs[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
+                  leading: CircleAvatar(
+                    backgroundColor: _getEntityColor(
+                      log.entityType,
+                      theme,
+                    ).withValues(alpha: 0.1),
+                    child: Icon(
+                      _getEntityIcon(log.entityType),
+                      color: _getEntityColor(log.entityType, theme),
+                      size: 20,
+                    ),
+                  ),
+                  title: Row(
+                    children: [
+                      Text(
+                        _entityLabel(log.entityType),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
-                        DataCell(Text(_entityLabel(l.entityType))),
-                        DataCell(
-                          Text(
-                            l.entityId.length > 12
-                                ? '${l.entityId.substring(0, 12)}…'
-                                : l.entityId,
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          log.action,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontSize: 10,
                           ),
                         ),
-                        DataCell(Text(l.action)),
-                        DataCell(
-                          Text('${l.oldState ?? "–"} → ${l.newState ?? "–"}'),
+                      ),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(
+                        'ID: ${log.entityId} • By: ${log.changedBy ?? "System"}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      if (log.oldState != null || log.newState != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.swap_horiz,
+                              size: 14,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${log.oldState ?? "–"} → ${log.newState ?? "–"}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        DataCell(Text(l.changedBy ?? '–')),
                       ],
+                    ],
+                  ),
+                  trailing: Text(
+                    _timeFormat.format(log.occurredAt.toLocal()),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                  )
-                  .toList(),
+                  ),
+                );
+              },
             ),
-          ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Text(
@@ -434,7 +508,7 @@ class _AuditDataTable extends StatelessWidget {
                     tooltip: 'Previous page',
                   ),
                   Text(
-                    'Page ${page + 1} of ${(totalElements / pageSize).ceil().clamp(1, totalElements)}',
+                    'Page ${page + 1} of ${(totalElements / pageSize).ceil()}',
                     style: theme.textTheme.bodySmall,
                   ),
                   IconButton(
@@ -459,5 +533,22 @@ class _AuditDataTable extends StatelessWidget {
       orElse: () => null,
     );
     return f?.label ?? type;
+  }
+
+  IconData _getEntityIcon(String type) {
+    if (type.contains('QUOTE')) return Icons.description_outlined;
+    if (type.contains('CLAIM')) return Icons.assignment_outlined;
+    if (type.contains('UW_CASE')) return Icons.gavel_outlined;
+    if (type.contains('PAYOUT')) return Icons.payments_outlined;
+    if (type.contains('WORKFLOW')) return Icons.account_tree_outlined;
+    return Icons.history;
+  }
+
+  Color _getEntityColor(String type, ThemeData theme) {
+    if (type.contains('QUOTE')) return Colors.blue;
+    if (type.contains('CLAIM')) return Colors.orange;
+    if (type.contains('UW_CASE')) return Colors.purple;
+    if (type.contains('PAYOUT')) return Colors.green;
+    return theme.colorScheme.primary;
   }
 }

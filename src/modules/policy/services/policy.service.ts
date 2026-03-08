@@ -352,6 +352,7 @@ export class PolicyService {
     async findAll(tenantId: string): Promise<Policy[]> {
         return this.policyRepo.find({
             where: { tenantId },
+            relations: ['coverages', 'coverages.coverageOption'],
             order: { createdAt: 'DESC' },
         });
     }
