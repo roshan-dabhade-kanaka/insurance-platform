@@ -246,6 +246,9 @@ class AuditNotifier extends StateNotifier<AsyncValue<AuditListState>> {
 }
 
 final auditProvider =
-    StateNotifierProvider<AuditNotifier, AsyncValue<AuditListState>>((ref) {
+    StateNotifierProvider.autoDispose<
+      AuditNotifier,
+      AsyncValue<AuditListState>
+    >((ref) {
       return AuditNotifier(ref.watch(apiClientProvider));
     });

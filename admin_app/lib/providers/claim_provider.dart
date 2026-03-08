@@ -61,7 +61,9 @@ class ClaimNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
 }
 
 final claimProvider =
-    StateNotifierProvider<ClaimNotifier, AsyncValue<List<Claim>>>((ref) {
+    StateNotifierProvider.autoDispose<ClaimNotifier, AsyncValue<List<Claim>>>((
+      ref,
+    ) {
       final notifier = ClaimNotifier(ref.watch(apiClientProvider));
       notifier.fetchClaims();
       return notifier;

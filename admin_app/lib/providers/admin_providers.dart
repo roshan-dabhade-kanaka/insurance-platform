@@ -289,7 +289,7 @@ class InsuranceRule {
 // ---------------------------------------------------------------------------
 
 /// Fetches all users from GET /users. Returns empty list on error.
-final usersProvider = FutureProvider<List<AdminUser>>((ref) async {
+final usersProvider = FutureProvider.autoDispose<List<AdminUser>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
     final res = await client.get('users');
@@ -307,7 +307,7 @@ final usersProvider = FutureProvider<List<AdminUser>>((ref) async {
 });
 
 /// Fetches all tenants from GET /tenants. Returns empty list on error.
-final tenantsProvider = FutureProvider<List<Tenant>>((ref) async {
+final tenantsProvider = FutureProvider.autoDispose<List<Tenant>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
     final res = await client.get('tenants');
@@ -326,24 +326,24 @@ final tenantsProvider = FutureProvider<List<Tenant>>((ref) async {
 
 /// Fetches today's processed payouts from GET /payouts/processed-today.
 /// Returns null on error so the UI can show "—".
-final processedTodayProvider = FutureProvider<ProcessedTodayStats?>((
-  ref,
-) async {
-  try {
-    final client = ref.watch(apiClientProvider);
-    final res = await client.get('payouts/processed-today');
-    if (res.statusCode == 200 && res.data is Map<String, dynamic>) {
-      return ProcessedTodayStats.fromJson(res.data as Map<String, dynamic>);
+final processedTodayProvider = FutureProvider.autoDispose<ProcessedTodayStats?>(
+  (ref) async {
+    try {
+      final client = ref.watch(apiClientProvider);
+      final res = await client.get('payouts/processed-today');
+      if (res.statusCode == 200 && res.data is Map<String, dynamic>) {
+        return ProcessedTodayStats.fromJson(res.data as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Processed today fetch error: $e');
+      return null;
     }
-    return null;
-  } catch (e) {
-    debugPrint('Processed today fetch error: $e');
-    return null;
-  }
-});
+  },
+);
 
 /// Fetches all products from GET /products.
-final productsProvider = FutureProvider<List<Product>>((ref) async {
+final productsProvider = FutureProvider.autoDispose<List<Product>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
     final res = await client.get('products');
@@ -361,8 +361,8 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
 });
 
 /// Fetches rules for a specific product version.
-final rulesProvider =
-    FutureProvider.family<Map<String, List<InsuranceRule>>, String>((
+final rulesProvider = FutureProvider.autoDispose
+    .family<Map<String, List<InsuranceRule>>, String>((
       ref,
       productVersionId,
     ) async {
@@ -401,7 +401,7 @@ final rulesProvider =
     });
 
 /// Fetches all quotes from GET /quotes.
-final quotesProvider = FutureProvider<List<Quote>>((ref) async {
+final quotesProvider = FutureProvider.autoDispose<List<Quote>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
     // Note: We'll eventually need to pass the tenant ID via headers as implemented in the controller.
@@ -443,7 +443,7 @@ class SlaStats {
   }
 }
 
-final slaProvider = FutureProvider<List<SlaStats>>((ref) async {
+final slaProvider = FutureProvider.autoDispose<List<SlaStats>>((ref) async {
   try {
     final client = ref.watch(apiClientProvider);
     final res = await client.get('sla/stats');
@@ -461,7 +461,9 @@ final slaProvider = FutureProvider<List<SlaStats>>((ref) async {
 });
 
 /// Fetches all risk profiles from GET /risk.
-final riskProfilesProvider = FutureProvider<List<RiskProfile>>((ref) async {
+final riskProfilesProvider = FutureProvider.autoDispose<List<RiskProfile>>((
+  ref,
+) async {
   try {
     final client = ref.watch(apiClientProvider);
     final res = await client.get('risk');

@@ -51,9 +51,10 @@ class FinanceNotifier extends StateNotifier<AsyncValue<List<PayoutRequest>>> {
 }
 
 final financeProvider =
-    StateNotifierProvider<FinanceNotifier, AsyncValue<List<PayoutRequest>>>((
-      ref,
-    ) {
+    StateNotifierProvider.autoDispose<
+      FinanceNotifier,
+      AsyncValue<List<PayoutRequest>>
+    >((ref) {
       final notifier = FinanceNotifier(ref.watch(apiClientProvider));
       notifier.fetchPendingPayouts();
       return notifier;

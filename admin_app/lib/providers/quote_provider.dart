@@ -108,7 +108,9 @@ class QuoteNotifier extends StateNotifier<AsyncValue<List<Quote>>> {
 }
 
 final quoteProvider =
-    StateNotifierProvider<QuoteNotifier, AsyncValue<List<Quote>>>((ref) {
+    StateNotifierProvider.autoDispose<QuoteNotifier, AsyncValue<List<Quote>>>((
+      ref,
+    ) {
       final notifier = QuoteNotifier(ref.watch(apiClientProvider));
       notifier.fetchQuotes();
       return notifier;

@@ -66,6 +66,14 @@ class _QuoteLifecyclePageState extends ConsumerState<QuoteLifecyclePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(quoteProvider.notifier).fetchQuotes();
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();

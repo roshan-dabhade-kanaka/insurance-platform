@@ -154,6 +154,8 @@ export class PolicyService {
             quoteId: quote.id,
             productVersionId: quote.productVersionId,
             policyNumber,
+            policyHolderRef: quote.applicantRef || 'N/A',
+            policyHolderData: quote.applicantData || {},
             status: 'PENDING_ISSUANCE' as any,
             annualPremium: snapshot.totalPremium,
             premiumSnapshotId: snapshotId,

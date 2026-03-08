@@ -62,6 +62,7 @@ class ResponseHandler {
       message = '${message.substring(0, 147)}...';
     }
 
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(

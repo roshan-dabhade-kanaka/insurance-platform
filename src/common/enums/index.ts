@@ -95,8 +95,10 @@ export enum DisbursementStatus {
 
 // ── Risk ─────────────────────────────────────────────────────────────────────
 export enum RiskBand {
+  PREFERRED = 'PREFERRED',
   LOW = 'LOW',
   STANDARD = 'STANDARD',
+  SUBSTANDARD = 'SUBSTANDARD',
   HIGH = 'HIGH',
   DECLINED = 'DECLINED',
 }

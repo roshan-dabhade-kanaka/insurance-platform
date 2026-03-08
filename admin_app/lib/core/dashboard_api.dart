@@ -74,7 +74,9 @@ final isCustomerDashboardProvider = Provider<bool>((ref) {
   return isCustomerDashboardScope(user);
 });
 
-final dashboardStatsProvider = FutureProvider<DashboardStats?>((ref) async {
+final dashboardStatsProvider = FutureProvider.autoDispose<DashboardStats?>((
+  ref,
+) async {
   ref.watch(authVersionProvider);
   try {
     final authState = ref.watch(authNotifierProvider).state;
@@ -100,29 +102,28 @@ final dashboardStatsProvider = FutureProvider<DashboardStats?>((ref) async {
 });
 
 /// Premium trend data for the bar chart. Returns empty list on error.
-final premiumTrendsProvider = FutureProvider<List<PremiumTrendPoint>>((
-  ref,
-) async {
-  try {
-    final authState = ref.watch(authNotifierProvider).state;
-    String tenantId = ApiConstants.defaultTenantId;
-    if (authState is AuthAuthenticated) {
-      tenantId = authState.user.tenantId;
-    }
-    final client = ref.watch(apiClientProvider);
-    final res = await client.get(
-      'dashboard/premium-trends',
-      queryParameters: {'tenantId': tenantId},
-    );
-    if (res.statusCode == 200 && res.data is List) {
-      return (res.data as List)
-          .cast<Map<String, dynamic>>()
-          .map(PremiumTrendPoint.fromJson)
-          .toList();
-    }
-    return [];
-  } catch (e) {
-    debugPrint('Premium trends error: $e');
-    return [];
-  }
-});
+final premiumTrendsProvider =
+    FutureProvider.autoDispose<List<PremiumTrendPoint>>((ref) async {
+      try {
+        final authState = ref.watch(authNotifierProvider).state;
+        String tenantId = ApiConstants.defaultTenantId;
+        if (authState is AuthAuthenticated) {
+          tenantId = authState.user.tenantId;
+        }
+        final client = ref.watch(apiClientProvider);
+        final res = await client.get(
+          'dashboard/premium-trends',
+          queryParameters: {'tenantId': tenantId},
+        );
+        if (res.statusCode == 200 && res.data is List) {
+          return (res.data as List)
+              .cast<Map<String, dynamic>>()
+              .map(PremiumTrendPoint.fromJson)
+              .toList();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('Premium trends error: $e');
+        return [];
+      }
+    });

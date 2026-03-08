@@ -33,7 +33,9 @@ class FraudNotifier extends StateNotifier<AsyncValue<List<Claim>>> {
 }
 
 final fraudProvider =
-    StateNotifierProvider<FraudNotifier, AsyncValue<List<Claim>>>((ref) {
+    StateNotifierProvider.autoDispose<FraudNotifier, AsyncValue<List<Claim>>>((
+      ref,
+    ) {
       final notifier = FraudNotifier(ref.watch(apiClientProvider));
       notifier.fetchPendingReviews();
       return notifier;

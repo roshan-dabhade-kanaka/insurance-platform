@@ -23,6 +23,7 @@ import { RateTable } from './entities/rules.entity';
 import { RateTableEntry } from './entities/rules.entity';
 import { PremiumSnapshot, Quote } from '../quote/entities/quote.entity';
 import { ProductVersion } from '../product/entities/product.entity';
+import { RiskProfile } from '../risk/entities/risk-profile.entity';
 
 // ── Services ─────────────────────────────────────────────────────────────────
 import { RuleLoaderService } from './services/rule-loader.service';
@@ -61,6 +62,7 @@ const RULE_SERVICES = [
             PremiumSnapshot,
             Quote,
             ProductVersion,
+            RiskProfile,
         ]),
     ],
     providers: [...RULE_SERVICES],

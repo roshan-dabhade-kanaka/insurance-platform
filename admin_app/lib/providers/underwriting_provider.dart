@@ -73,7 +73,7 @@ class UnderwritingNotifier
 }
 
 final underwritingProvider =
-    StateNotifierProvider<
+    StateNotifierProvider.autoDispose<
       UnderwritingNotifier,
       AsyncValue<List<UnderwritingCase>>
     >((ref) {

@@ -61,26 +61,28 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
 
   void _loadLogic(Map<String, dynamic> logic) {
     try {
-      final conditionsObj = logic['conditions'];
-      if (conditionsObj != null) {
-        if (conditionsObj['all'] != null) {
-          _matchType = 'ALL';
-          _parseConditions(conditionsObj['all']);
-        } else if (conditionsObj['any'] != null) {
-          _matchType = 'ANY';
-          _parseConditions(conditionsObj['any']);
+      if (_ruleType == 'Pricing') {
+        _rateController.text = logic['baseRate']?.toString() ?? '0.0';
+        _matchType = 'ALL';
+        _conditions = [Condition()];
+      } else {
+        final conditionsObj = logic['conditions'];
+        if (conditionsObj != null) {
+          if (conditionsObj['all'] != null) {
+            _matchType = 'ALL';
+            _parseConditions(conditionsObj['all']);
+          } else if (conditionsObj['any'] != null) {
+            _matchType = 'ANY';
+            _parseConditions(conditionsObj['any']);
+          }
         }
-      }
 
-      final event = logic['event'];
-      if (event != null) {
-        final type = event['type'];
-        final params = event['params'] ?? {};
-        if (_ruleType == 'Eligibility') {
+        final event = logic['event'];
+        if (event != null) {
+          final type = event['type'];
+          final params = event['params'] ?? {};
           _eventType = type ?? 'ineligible';
           _reasonController.text = params['reason']?.toString() ?? '';
-        } else {
-          _rateController.text = params['rate']?.toString() ?? '0.0';
         }
       }
     } catch (e) {
@@ -111,14 +113,19 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
   }
 
   Map<String, dynamic> _generateJson() {
+    if (_ruleType == 'Pricing') {
+      return {
+        'baseRate': double.tryParse(_rateController.text) ?? 0.0,
+        'factors': [],
+      };
+    }
+
     final conditionList = _conditions.map((c) => c.toJson()).toList();
     final logic = {
       'conditions': {_matchType.toLowerCase(): conditionList},
       'event': {
-        'type': _ruleType == 'Eligibility' ? _eventType : 'calculate-premium',
-        'params': _ruleType == 'Eligibility'
-            ? {'reason': _reasonController.text.trim()}
-            : {'rate': double.tryParse(_rateController.text) ?? 0.0},
+        'type': _eventType,
+        'params': {'reason': _reasonController.text.trim()},
       },
     };
     return logic;
@@ -188,6 +195,7 @@ class _RuleBuilderScreenState extends ConsumerState<RuleBuilderScreen> {
     } catch (e) {
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );

@@ -39,4 +39,18 @@ export class PolicyController {
             quoteId,
         });
     }
+
+    @Post(':policyId/activate')
+    @Roles(UserRole.UNDERWRITER, UserRole.AGENT, UserRole.ADMIN)
+    @AuditAction(AuditEntityType.POLICY, 'ACTIVATE')
+    async activatePolicy(
+        @Headers('x-tenant-id') tenantId: string,
+        @Param('policyId') policyId: string,
+    ) {
+        if (!tenantId) {
+            throw new BadRequestException('x-tenant-id header is required');
+        }
+        await this.policyService.activate(tenantId, policyId, 'System/Admin');
+        return { message: 'Policy activated successfully' };
+    }
 }

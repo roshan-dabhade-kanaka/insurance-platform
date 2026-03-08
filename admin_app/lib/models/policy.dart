@@ -19,13 +19,21 @@ class Policy {
 
   factory Policy.fromJson(Map<String, dynamic> json) {
     return Policy(
-      id: json['id'] as String,
-      tenantId: json['tenantId'] as String,
-      policyNumber: json['policyNumber'] as String,
-      status: json['status'] as String,
-      totalPremium: (json['totalPremium'] as num).toDouble(),
-      inceptionDate: DateTime.parse(json['inceptionDate'] as String),
-      expiryDate: DateTime.parse(json['expiryDate'] as String),
+      id: json['id']?.toString() ?? '',
+      tenantId: json['tenantId']?.toString() ?? '',
+      policyNumber: json['policyNumber']?.toString() ?? 'N/A',
+      status: json['status']?.toString() ?? 'UNKNOWN',
+      totalPremium:
+          double.tryParse(
+            (json['totalPremium'] ?? json['annualPremium'] ?? '0').toString(),
+          ) ??
+          0.0,
+      inceptionDate: json['inceptionDate'] != null
+          ? DateTime.parse(json['inceptionDate'].toString())
+          : DateTime.now(),
+      expiryDate: json['expiryDate'] != null
+          ? DateTime.parse(json['expiryDate'].toString())
+          : DateTime.now().add(const Duration(days: 365)),
     );
   }
 }

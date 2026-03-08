@@ -223,7 +223,7 @@ class _RiskProfilingPageState extends ConsumerState<RiskProfilingPage> {
               type: DynamicFormFieldType.number,
               hint: '0',
               required: true,
-              initialValue: _formData['previousClaims'] ?? 0,
+              initialValue: _formData['previousClaims']?.toString() ?? '0',
             ),
           ],
           submitLabel: 'Next: Review →',

@@ -11,6 +11,7 @@ export 'lifecycle_state_editor_page.dart';
 export 'login_page.dart';
 export 'notification_configuration_page.dart';
 export 'policy_issuance_page.dart';
+export 'policy_lifecycle_page.dart';
 export 'premium_calculation_page.dart';
 export 'pricing_rule_engine_page.dart';
 export 'product_builder_page.dart';

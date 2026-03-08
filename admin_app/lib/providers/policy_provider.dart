@@ -19,18 +19,22 @@ class PolicyNotifier extends StateNotifier<AsyncValue<List<Policy>>> {
     }
   }
 
-  Future<Policy> issuePolicy(
+  Future<void> issuePolicy(
     String quoteId, [
     Map<String, dynamic> issueData = const {},
   ]) async {
     try {
-      final response = await _apiClient.post(
-        'policies/$quoteId/issue',
-        data: issueData,
-      );
-      final policy = Policy.fromJson(response.data);
+      await _apiClient.post('policies/$quoteId/issue', data: issueData);
       await fetchPolicies();
-      return policy;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> activatePolicy(String policyId) async {
+    try {
+      await _apiClient.post('policies/$policyId/activate');
+      await fetchPolicies();
     } catch (e) {
       rethrow;
     }
@@ -38,8 +42,10 @@ class PolicyNotifier extends StateNotifier<AsyncValue<List<Policy>>> {
 }
 
 final policyProvider =
-    StateNotifierProvider<PolicyNotifier, AsyncValue<List<Policy>>>((ref) {
-      final notifier = PolicyNotifier(ref.watch(apiClientProvider));
-      notifier.fetchPolicies();
-      return notifier;
-    });
+    StateNotifierProvider.autoDispose<PolicyNotifier, AsyncValue<List<Policy>>>(
+      (ref) {
+        final notifier = PolicyNotifier(ref.watch(apiClientProvider));
+        notifier.fetchPolicies();
+        return notifier;
+      },
+    );

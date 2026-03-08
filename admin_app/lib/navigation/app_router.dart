@@ -24,6 +24,7 @@ class AppRouter {
   static const String quoteLifecycle = '/quote-lifecycle';
   static const String underwritingDecision = '/underwriting-decision';
   static const String policyIssuance = '/policy-issuance';
+  static const String policyLifecycle = '/policy-lifecycle';
   static const String claimSubmission = '/claim-submission';
   static const String claimInvestigation = '/claim-investigation';
   static const String fraudReview = '/fraud-review';
@@ -91,6 +92,11 @@ class AppRouter {
       route: policyIssuance,
       label: 'Policy Issuance',
       icon: Icons.task_outlined,
+    ),
+    SidebarDestination(
+      route: policyLifecycle,
+      label: 'Active Policies',
+      icon: Icons.shield_outlined,
     ),
     SidebarDestination(
       route: claimSubmission,
@@ -275,6 +281,11 @@ class AppRouter {
               path: '/policy-issuance',
               pageBuilder: (context, state) =>
                   const NoTransitionPage(child: PolicyIssuancePage()),
+            ),
+            GoRoute(
+              path: '/policy-lifecycle',
+              pageBuilder: (context, state) =>
+                  const NoTransitionPage(child: PolicyLifecyclePage()),
             ),
             GoRoute(
               path: '/claim-submission',
