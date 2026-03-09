@@ -78,7 +78,7 @@ The application is structured into four logical groupings to help users follow t
 *   **Flow**:
     1.  **Claim Submission**: The user uploads documents and details.
     2.  **Investigation**: Staff verify the facts of the incident.
-    3.  **Fraud Review**: Automated and manual checks for suspicious patterns.
+    3.  **Fraud Review**: Automated and manual checks for suspicious patterns.(not implemented till now)
     4.  **Assessment**: Determine the final approved payout amount.
     5.  **Finance Payout**: Final accounting approval before money is transferred.
 
