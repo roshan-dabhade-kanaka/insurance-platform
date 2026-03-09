@@ -1,0 +1,677 @@
+
+
+# 🧠 1. Architecture Planning Prompt
+
+*(Used to design system architecture, services, and tech stack)*
+
+```
+Design the architecture for an enterprise Insurance Policy Configuration and Underwriting Platform.
+
+The platform must support:
+
+Policy Purchase Workflow:
+- Product Selection
+- Coverage Configuration
+- Risk Profiling
+- Premium Calculation
+- Quote Lifecycle
+- Underwriting Review
+- Senior Approval
+- Policy Issuance
+
+Claims Workflow:
+- Claim Submission
+- Validation
+- Investigation
+- Fraud Review
+- Assessment
+- Approval / Rejection
+- Finance Review
+- Payout
+- Closure
+
+User Roles:
+Customer
+Agent/Broker
+Underwriter
+Senior Underwriter
+Claims Officer
+Fraud Analyst
+Finance Officer
+Compliance Officer
+Admin
+
+Tech Stack:
+
+Frontend: Flutter Web (Backoffice platform)
+Backend: NestJS with TypeScript
+Database: PostgreSQL
+Workflow Engine: Temporal
+Rule Engine: json-rules-engine
+Auth: JWT with RBAC
+
+Provide:
+
+System architecture diagram
+Service breakdown
+Data flow
+Workflow orchestration strategy
+Multi-tenant support
+Audit logging design
+Performance considerations
+```
+
+---
+
+# 🎨 2. Stitch Prompt — Generate Core UI Screens
+
+*(Used to generate first batch of enterprise UI screens)*
+
+```
+Design a complete enterprise admin platform UI for an Insurance Policy Configuration and Underwriting System.
+
+The system supports the following workflows:
+
+NEW POLICY PURCHASE FLOW
+- Product Selection
+- Coverage Configuration
+- Risk Profiling
+- Premium Calculation
+- Quote Lifecycle
+- Underwriting Review
+- Senior Approval
+- Policy Issuance
+
+CLAIMS MANAGEMENT FLOW
+- Claim Submission
+- Document Upload
+- Validation
+- Investigation
+- Fraud Review
+- Assessment
+- Approval / Rejection
+- Finance Review
+- Payout
+- Closure
+
+USER ROLES:
+Customer
+Agent
+Underwriter
+Senior Underwriter
+Claims Officer
+Fraud Analyst
+Finance Officer
+Compliance Officer
+Admin
+
+Create screens for:
+
+Dashboard
+Product Configuration
+Coverage Setup
+Rule Configuration
+Risk Profiling Form
+Premium Calculation View
+Quote Lifecycle Tracker
+Underwriting Decision Panel
+Policy Issuance Summary
+Claim Submission Form
+Claim Investigation Panel
+Fraud Review Dashboard
+Assessment Workspace
+Finance Payout Approval
+Compliance Audit Logs
+User Management
+Tenant Management
+Report Generation
+
+Use enterprise SaaS layout:
+Left sidebar navigation
+Workflow stepper UI
+Table views
+Dynamic forms
+Approval panels
+Audit logs
+
+Return all screens in a single UI design system.
+```
+
+---
+
+# 🧩 3. Stitch Prompt — Generate Governance & Configuration Screens
+
+*(Used to generate rule engine and product configuration UI)*
+
+```
+Generate enterprise system configuration and governance screens
+for the Insurance Policy Configuration Platform.
+
+These screens are used by Admin and Compliance teams
+to configure insurance product logic, underwriting rules,
+risk scoring models, and workflow approvals.
+
+Create separate screens for:
+
+Product Builder
+Product Version Manager
+Coverage Definition Manager
+Rider Configuration Panel
+Eligibility Rule Builder
+Pricing Rule Engine
+Risk Scoring Configuration
+Underwriting Approval Workflow Configurator
+Claim Validation Rule Configuration
+Fraud Detection Rule Configuration
+Finance Approval Routing
+Lifecycle State Configuration
+Audit Trail Viewer
+SLA Monitoring Dashboard
+Document Template Manager
+Notification Configuration
+Regulatory Report Generator
+Workflow State Mapping
+
+Ensure:
+
+Table-based configuration
+Rule JSON preview panel
+Approval hierarchy mapping
+Workflow stepper config
+Lifecycle state editor
+Audit visibility
+
+Use same enterprise SaaS layout as previously generated screens.
+```
+
+---
+
+# 📱 4. Cursor Prompt — Convert Stitch HTML → Flutter
+
+*(Used to generate Flutter Web admin UI from exported HTML)*
+
+```
+Convert all HTML UI screens located inside the /ui-html subfolders
+into a Flutter Web Admin Application.
+
+Use:
+
+Material 3
+Modular Flutter architecture
+Responsive layout for web
+
+Create:
+
+App Layout:
+Sidebar Navigation Layout
+Top Header Layout
+Main Content Area
+
+Reusable Widgets:
+
+DynamicFormWidget
+WorkflowStepperWidget
+ApprovalDecisionPanel
+RuleBuilderWidget
+JsonPreviewPanel
+AuditLogTable
+PaginatedDataTableWidget
+LifecycleEditorWidget
+DocumentTemplateMapper
+NotificationConfigWidget
+
+Pages:
+
+DashboardPage
+ProductConfigurationPage
+CoverageSetupPage
+RuleConfigurationPage
+RiskProfilingPage
+PremiumCalculationPage
+QuoteLifecyclePage
+UnderwritingDecisionPage
+PolicyIssuancePage
+ClaimSubmissionPage
+ClaimInvestigationPage
+FraudReviewPage
+AssessmentPage
+FinancePayoutApprovalPage
+ComplianceAuditLogsPage
+UserManagementPage
+TenantManagementPage
+ReportGenerationPage
+ProductBuilderPage
+PricingRuleEnginePage
+WorkflowConfiguratorPage
+LifecycleStateEditorPage
+SLAMonitoringPage
+DocumentTemplateManagerPage
+NotificationConfigurationPage
+
+Convert:
+
+HTML Forms → Flutter Dynamic Forms
+Workflow UI → Stepper Widget
+Tables → Paginated DataTable
+Rule Panels → JSON Code Viewer
+Approval Panels → Decision Widgets
+
+Separate code into:
+
+lib/pages
+lib/widgets
+lib/layout
+lib/navigation
+lib/theme
+```
+
+---
+
+# 🗄️ 5. Antigravity Prompt — Database Schema Generation
+
+*(Used to create PostgreSQL entities and tables)*
+
+``` 
+Design PostgreSQL database schema
+for a NestJS microservices backend
+for an Insurance Policy Configuration Platform.
+
+Use:
+
+TypeScript
+NestJS
+TypeORM
+PostgreSQL
+
+Generate:
+
+TypeORM entity definitions
+Database tables
+Indexes
+Foreign key relations
+
+Entities should support:
+
+Tenants
+Users
+Roles
+Products
+Product Versions
+Coverage Options
+Eligibility Rules
+Pricing Rules
+Risk Profiles
+Quotes
+Underwriting Decisions
+Policies
+Claims
+Fraud Reviews
+Payouts
+Audit Logs
+
+Use JSONB fields for:
+
+Eligibility rules
+Pricing rules
+Fraud detection rules
+Workflow configurations
+
+Support:
+
+Quote lifecycle
+Policy lifecycle
+Claim lifecycle
+Multi-tenant isolation
+Audit logging
+```
+
+---
+
+# 🔄 6. Temporal Workflow Prompt
+
+*(Used to create long-running business workflows)*
+
+```
+Generate Temporal workflows
+for a NestJS TypeScript backend
+for an Insurance Policy Configuration Platform.
+
+Create workflows:
+
+QUOTE WORKFLOW
+
+Lifecycle:
+DRAFT → QUOTED → SUBMITTED → UNDER_REVIEW → APPROVED → REJECTED → ISSUED
+
+Steps:
+
+Risk Profiling
+Premium Calculation
+Rule Evaluation
+Underwriting Review
+
+If risk_score > threshold
+require Senior Underwriter approval.
+
+CLAIM WORKFLOW
+
+Lifecycle:
+SUBMITTED → VALIDATION_PENDING → UNDER_INVESTIGATION → FRAUD_REVIEW → ASSESSMENT → APPROVED → REJECTED → FINANCE_REVIEW → PAID → CLOSED
+
+Steps:
+
+Policy validation
+Coverage validation
+Waiting period check
+Duplicate claim detection
+
+If claim_amount > 3x average
+trigger fraud review.
+
+Generate:
+
+Workflow definitions
+Activities
+Worker setup
+Retry logic
+Compensation handling
+```
+
+---
+
+# ⚙️ 7. NestJS Service Layer Prompt
+
+*(Creates backend services)*
+
+```
+Generate NestJS service layer
+for Insurance Policy Configuration Platform.
+
+Create services:
+
+QuoteService
+UnderwritingService
+PolicyService
+ClaimService
+FraudService
+FinanceService
+AuditService
+
+Each service must:
+
+Use TypeORM entities
+Trigger Temporal workflows
+Evaluate rule engine logic
+Emit domain events
+Persist lifecycle state changes
+```
+
+---
+
+# 🌐 8. API Controller Prompt
+
+*(Creates REST endpoints)*
+
+```
+Generate NestJS REST controllers
+for Insurance Policy Configuration Platform.
+
+Controllers:
+
+QuoteController
+UnderwritingController
+PolicyController
+ClaimController
+FraudController
+FinanceController
+AuditController
+
+Endpoints should support:
+
+Create quote
+Submit quote
+Approve / reject underwriting
+Issue policy
+Submit claim
+Investigate claim
+Fraud review
+Approve payout
+Fetch audit logs
+```
+
+---
+
+# 🔐 9. Authentication + RBAC Prompt
+
+*(Adds login, JWT auth, role guards)*
+
+```
+Generate authentication and RBAC
+for NestJS backend.
+
+Use:
+
+JWT authentication
+Role-based access control
+NestJS guards
+
+Roles:
+
+Admin
+Agent
+Underwriter
+SeniorUnderwriter
+ClaimsOfficer
+FraudAnalyst
+FinanceOfficer
+ComplianceOfficer
+Customer
+
+Create:
+
+AuthModule
+JWT strategy
+Role guard
+Permission decorator
+Login endpoint
+```
+
+---
+
+# 🧾 10. Audit Logging Prompt
+
+*(Tracks compliance logs)*
+
+```
+Generate Audit Logging module
+for NestJS backend.
+
+Track events:
+
+Quote creation
+Premium changes
+Underwriting decisions
+Claim adjustments
+Fraud reviews
+Payout approvals
+Policy issuance
+Rule configuration changes
+
+Create:
+
+Audit entity
+Audit service
+Audit interceptor
+
+Ensure every lifecycle transition is logged.
+```
+
+---
+
+# 🧑‍💻 11. Database Seeder Prompt
+
+*(Creates default roles and users)*
+
+```
+Create database seeding module
+for Insurance Policy Configuration Platform.
+
+Seed roles:
+
+Customer
+Agent
+Underwriter
+SeniorUnderwriter
+ClaimsOfficer
+FraudAnalyst
+FinanceOfficer
+ComplianceOfficer
+Admin
+
+Seed default users for each role.
+
+Ensure:
+
+Passwords hashed with bcrypt
+Seeder runs automatically on startup
+Idempotent execution
+```
+
+---
+
+# 📡 12. Flutter API Integration Prompt
+
+*(Connects UI with backend APIs)*
+
+```
+Integrate Flutter Web Admin UI
+with NestJS REST APIs.
+
+Use:
+
+Dio for HTTP client
+Riverpod for state management
+
+Connect UI actions to APIs:
+
+Create Quote
+Submit Quote
+Approve Underwriting
+Submit Claim
+Investigate Claim
+Approve Payout
+
+Handle:
+
+JWT token storage
+Error handling
+Loading states
+DTO mapping
+```
+
+---
+
+# 🔑 13. Flutter Login Flow Prompt
+
+*(Implements real authentication in UI)*
+
+```
+Implement login flow in Flutter Web Admin UI.
+
+Create:
+
+Login page
+Auth provider
+JWT storage
+Dio interceptor
+
+On login:
+
+Call POST /auth/login
+Store JWT token
+Attach token to all API calls
+
+Show role-based navigation based on JWT role.
+```
+
+---
+
+# 📦 14. Docker Deployment Prompt
+
+*(Used to containerize system)*
+
+```
+Generate Docker deployment setup
+for Insurance Policy Configuration Platform.
+
+Create:
+
+Dockerfile for NestJS backend
+Dockerfile for Flutter web UI
+docker-compose.yml
+
+Services:
+
+PostgreSQL
+Temporal
+NestJS API
+Flutter Admin UI
+
+Configure environment variables
+service networking
+volume mounts
+port mappings
+```
+
+
+---
+
+refine risk and pricing. risk score should directly impact the premium calc. make sure rider costs and discounts are applied and showing correctly in rupees
+
+risk profiling form is not picking up the health history fields. fix it
+
+underwriting decision page should show the full breakdown. want to see risk score, premium, riders, coverage amounts and the final recommended decision
+
+premium not being shown in correct format. make it rupees with comma separators
+
+senior underwriter approval level is missing from the flow. if risk score is above threshold route it for secondary review
+
+claims submission api is giving 500 error. check why its failing and fix it
+
+getting 409 conflict error - potential duplicate claim detected for same coverage around same loss date
+
+after assessment is done will it appear in payout page or not. the status transition is not working
+
+internal server error on the finance approve api. payout approval is completely broken
+
+still internal server error on approve. check the backend logs and fix properly
+
+add a loader on the payout approve button so user knows its processing. also audit logs page has overflow issue fix that. and make the audit entries look more readable and intuitive
+
+report generation needs to be built out. when can we do that
+
+make the date range calendar on report page similar to the other date pickers in the app
+
+after clicking download only a success message is showing but no file is actually being saved to my system. fix the download so pdf and excel actually download
+
+why am i not seeing the pdf. something is not working on my end with the file
+
+i claimed term life insurance but in the pdf there is no proper data. why isnt my claim showing
+
+compliance pdf is looking like json. its showing raw json data in the report instead of proper formatting. make it look like actual report
+
+still no proper values in reports. claims by product showing 0 and compliance audit also showing 0 entries. both failing
+
+make the compliance audit pdf look good. add spacing between audit entries
+
+the fields in the report are not properly separated and overlapping. not looking good at all
+
+the log entries are showing like a paragraph not a table. add proper layout for logs
+
+still looking like a paragraph. add table like structure with proper margin and padding and columns
+
+make the column for performed by show email instead of that long uuid
+
+remove the files which are not required. those temp js files for db changes and all the build error files and analysis files are cluttering the project
+
+in the readme file add how to start the project both backend and frontend. mention temporal is currently off and fallback is there. add which role has access to which tabs. explain the flow groups in simple english. make the readme proper and intuitive

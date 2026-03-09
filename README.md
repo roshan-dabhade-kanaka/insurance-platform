@@ -2,6 +2,8 @@
 
 A comprehensive insurance management system for handling the entire lifecycle of products, policies, and claims.
 
+> All development prompts used to build this project are documented in [`prompts.log`](./prompts.log) at the root of the repository. It includes the initial architecture planning prompts, UI generation prompts, backend service prompts, and all daily task and debugging prompts from the session history.
+
 ## 🚀 How to Start the Project
 
 ### 1. Backend (NestJS)
